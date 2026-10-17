@@ -1,0 +1,78 @@
+# Giorni di conservazione in frigo (stime prudenziali, ispirate a USDA FoodKeeper).
+# Chiave: categoria -> stato -> giorni dall'acquisto/apertura.
+default:
+  chiuso: 5
+  aperto: 3
+  cotto: 3
+  congelato: 90
+categorie:
+  latticini:
+    chiuso: 10
+    aperto: 5
+    cotto: 3
+    congelato: 90
+  formaggio_fresco:
+    chiuso: 7
+    aperto: 4
+    cotto: 3
+    congelato: 60
+  formaggio_stagionato:
+    chiuso: 40
+    aperto: 21
+    cotto: 4
+    congelato: 180
+  uova:
+    chiuso: 28
+    aperto: 3
+    cotto: 4
+    congelato: 365
+  carne:
+    chiuso: 3
+    aperto: 2
+    cotto: 3
+    congelato: 180
+  pesce:
+    chiuso: 2
+    aperto: 1
+    cotto: 2
+    congelato: 120
+  salumi:
+    chiuso: 21
+    aperto: 5
+    cotto: 4
+    congelato: 60
+  verdura:
+    chiuso: 7
+    aperto: 3
+    cotto: 4
+    congelato: 240
+  frutta:
+    chiuso: 7
+    aperto: 3
+    cotto: 3
+    congelato: 240
+  pane:
+    chiuso: 5
+    aperto: 3
+    cotto: 3
+    congelato: 90
+  pasta_fresca:
+    chiuso: 5
+    aperto: 2
+    cotto: 3
+    congelato: 60
+  piatti_pronti:
+    chiuso: 5
+    aperto: 2
+    cotto: 3
+    congelato: 90
+  bevande:
+    chiuso: 30
+    aperto: 5
+    cotto: 5
+    congelato: 180
+  condimenti:
+    chiuso: 90
+    aperto: 30
+    cotto: 7
+    congelato: 180
