@@ -2,7 +2,9 @@ tests/fixtures/off/
 tests/fixtures/synthetic/
 __pycache__/
 *.pyc
+*.py[cod]
 .pytest_cache/
 .venv/
 *.db
 data-db/
+.DS_Store
