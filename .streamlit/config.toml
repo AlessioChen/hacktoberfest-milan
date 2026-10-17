@@ -1,8 +1,14 @@
+# Segue il tema del sistema (chiaro/scuro): bianco e nero, arancione solo come accento.
 [theme]
-base = "dark"
 primaryColor = "#FF7A2F"
-backgroundColor = "#1A0E06"
-secondaryBackgroundColor = "#2B1608"
-textColor = "#FFF3DF"
 font = "sans serif"
 
+[theme.light]
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F4F5"
+textColor = "#0A0A0A"
+
+[theme.dark]
+backgroundColor = "#0A0A0A"
+secondaryBackgroundColor = "#18181B"
+textColor = "#FAFAFA"

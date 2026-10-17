@@ -2,6 +2,7 @@ import base64
 import io
 import json
 import os
+import re
 
 import httpx
 from PIL import Image, ImageOps
@@ -31,6 +32,28 @@ def prepare(image: bytes, max_side: int = 1280) -> bytes:
     return out.getvalue()
 
 
+def _parse_json(content: str, schema: dict) -> dict:
+    """Gemma a volte riempie il JSON di righe vuote e viene troncato: si recuperano i campi già scritti."""
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        pass
+    out = {}
+    for name, prop in schema["properties"].items():
+        if prop["type"] == "string":
+            m = re.search(rf'"{name}"\s*:\s*"((?:[^"\\]|\\.)*)"', content)
+        elif prop["type"] == "number":
+            m = re.search(rf'"{name}"\s*:\s*(-?[\d.]+)', content)
+        else:
+            continue
+        if m:
+            out[name] = float(m[1]) if prop["type"] == "number" else m[1]
+    missing = [k for k in schema.get("required", []) if k not in out]
+    if missing:
+        raise ValueError(f"Risposta del modello non valida (mancano {missing}): {content[:200]!r}")
+    return out
+
+
 def chat_json(prompt: str, schema: dict, image: bytes | None = None) -> dict:
     msg = {"role": "user", "content": prompt}
     if image:
@@ -38,11 +61,11 @@ def chat_json(prompt: str, schema: dict, image: bytes | None = None) -> dict:
     r = httpx.post(
         f"{OLLAMA_URL}/api/chat",
         json={"model": OLLAMA_MODEL, "messages": [msg], "format": schema, "stream": False, "think": False,
-              "options": {"temperature": 0}},
+              "options": {"temperature": 0, "num_predict": 400}},
         timeout=300,
     )
     r.raise_for_status()
-    return json.loads(r.json()["message"]["content"])
+    return _parse_json(r.json()["message"]["content"], schema)
 
 
 def chat_text(prompt: str) -> str:
@@ -89,16 +112,15 @@ LABEL_SCHEMA = {
     "properties": {
         "testo_data": {"type": "string"},
         "tipo": {"type": "string", "enum": ["da_consumare_entro", "preferibilmente_entro", "sconosciuto"]},
-        "confidenza": {"type": "number"},
     },
-    "required": ["testo_data", "tipo", "confidenza"],
+    "required": ["testo_data", "tipo"],
 }
 
 
 def read_label(image: bytes) -> dict:
     return chat_json(
-        "Leggi la data di scadenza stampata sull'etichetta: è fatta di CIFRE (es. '12/10/26', "
-        "'15 04 11', '2016 06 01', '13/12/2025'). Copia le cifre ESATTAMENTE in testo_data. "
+        "Leggi la data di scadenza stampata sull'etichetta: è fatta di CIFRE (giorno, mese, anno), "
+        "talvolta con il mese in lettere o solo mese e anno. Copia SOLO le righe con date (se ce ne sono più di una, copiale tutte separate da uno spazio), ESATTAMENTE com'è stampata e con i separatori (/ . - spazi), in testo_data. "
         "Ignora le scritte di formato come 'dd/mm/yyyy', i codici di lotto (L..., B...), "
         "gli orari (12:09) e il testo descrittivo. Indica se la dicitura è 'da consumare entro', "
         "'preferibilmente entro' o sconosciuto. Se non vedi cifre di una data lascia testo_data vuoto.",

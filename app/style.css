@@ -1,26 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg: #1A0E06; --panel: #241209; --panel-2: #2B1608;
-  --line: rgba(255, 243, 223, .10); --text: #FFF3DF; --muted: #A38D77;
-  --orange: #FF7A2F; --green: #3DBA78; --yellow: #FFC24A; --red: #FF5A3C;
+  /* neutri derivati dal colore del testo del tema (nero/bianco): funzionano in chiaro e scuro */
+  --line: color-mix(in srgb, currentColor 12%, transparent);
+  --muted: color-mix(in srgb, currentColor 55%, transparent);
+  --panel: color-mix(in srgb, currentColor 4%, transparent);
+  --panel-2: color-mix(in srgb, currentColor 7%, transparent);
+  --orange: #FF7A2F; --green: #2FA866; --yellow: #E8A317; --red: #F04A2C;
 }
 html, body, [class*="css"], .stApp { font-family: 'Inter', sans-serif; }
-.stApp { background: radial-gradient(1200px 600px at 80% -10%, #2E1709 0%, var(--bg) 60%); }
 header[data-testid="stHeader"] { background: transparent; }
 .block-container { padding: 2.2rem 2.6rem 3rem; max-width: 1000px; }
 
 /* sidebar */
-section[data-testid="stSidebar"] { background: var(--panel); border-right: 1px solid var(--line); }
+section[data-testid="stSidebar"] { border-right: 1px solid var(--line); }
 section[data-testid="stSidebar"] > div { padding-top: .6rem; }
 .brand { display: flex; align-items: center; gap: .6rem; font-size: 1.25rem; font-weight: 700; margin: .4rem 0 1.6rem; }
-.brand img { height: 40px; width: auto; }
+.brand img { height: 40px; width: 40px; border-radius: 10px; }
 section[data-testid="stSidebar"] div[role="radiogroup"] { gap: .25rem; }
 section[data-testid="stSidebar"] div[role="radiogroup"] label {
   padding: .6rem .8rem; border-radius: 10px; width: 100%; color: var(--muted); cursor: pointer;
 }
 section[data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child { display: none; }
-section[data-testid="stSidebar"] div[role="radiogroup"] label:hover { background: rgba(255,243,223,.04); }
+section[data-testid="stSidebar"] div[role="radiogroup"] label:hover { background: var(--panel-2); }
 section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
   background: rgba(255,122,47,.14); color: var(--orange); font-weight: 600;
 }
@@ -35,7 +37,7 @@ section[data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked)
 .page-head h1 { font-size: 1.9rem; font-weight: 700; margin: 0; padding: 0; }
 .page-head span { font-size: .72rem; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
 .alert { margin: 1rem 0 1.2rem; padding: .7rem 1rem; border-radius: 10px; font-size: .85rem;
-  background: rgba(255,90,60,.10); border: 1px solid rgba(255,90,60,.35); color: #FF9577; }
+  background: rgba(240,74,44,.10); border: 1px solid rgba(240,74,44,.35); color: var(--red); }
 
 /* inventory rows */
 .row { display: flex; align-items: center; gap: .9rem; padding: .85rem 0; min-height: 3.2rem; }
@@ -61,6 +63,6 @@ div[data-testid="stHorizontalBlock"]:has(.row) button:hover { color: var(--orang
 
 /* generic widgets */
 .stButton > button, .stFormSubmitButton > button { border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); }
-.stFormSubmitButton > button, .stButton > button[kind="primary"] { background: var(--orange); color: #2B1608; font-weight: 600; border: none; }
+.stFormSubmitButton > button, .stButton > button[kind="primary"] { background: var(--orange); color: #fff; font-weight: 600; border: none; }
 div[data-testid="stForm"], div[data-testid="stExpander"] { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
 .stTabs [aria-selected="true"] { color: var(--orange); }

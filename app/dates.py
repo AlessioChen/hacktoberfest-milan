@@ -27,7 +27,7 @@ _LOT = re.compile(r"\b(?:lotto|lot|l)\s*[:.\-]?\s*[A-Z0-9]{3,}\b", re.I)
 
 # (regex, handler) in ordine di specificità; i match già coperti da uno precedente sono scartati
 _PATTERNS = [
-    ("ymd", re.compile(rf"(?<!\d)(20\d{{2}})\s*[/.\-]\s*{_M}\s*[/.\-]\s*{_D}(?!\d)")),
+    ("ymd", re.compile(rf"(?<!\d)(20\d{{2}})\s*[/.\-\s]\s*{_M}\s*[/.\-\s]\s*{_D}(?!\d)")),
     ("dmy", re.compile(rf"(?<!\d){_D}\s*[/.\-\s]\s*{_M}\s*[/.\-\s]\s*{_YEAR}(?!\d)")),
     ("dMony", re.compile(rf"(?<!\d){_D}\s*[/.\-\s]?\s*({_MON})[a-z]*\.?\s*[/.\-\s]?\s*{_YEAR}(?!\d)", re.I)),
     ("Mony", re.compile(rf"\b({_MON})[a-z]*\.?\s*[/.\-\s]?\s*{_YEAR}(?!\d)", re.I)),

@@ -1,4 +1,5 @@
 import base64
+import hashlib
 import html
 import sys
 from datetime import date
@@ -29,9 +30,8 @@ def semaforo(item: Item) -> str:
 
 
 def logo_b64() -> str:
-    # marchio con frigo crema su fondo trasparente; steli e piedini scuri diventano crema per il tema scuro
-    svg = (ROOT / "assets" / "fuorisaver-morso-mark.svg").read_text().replace("#2B1608", "#FFF3DF")
-    return base64.b64encode(svg.encode()).decode()
+    # logo a tessera arancione: identico in tema chiaro e scuro
+    return base64.b64encode((ROOT / "assets" / "fuorisaver.png").read_bytes()).decode()
 
 
 def scadenza_label(item: Item) -> str:
@@ -43,21 +43,27 @@ def scadenza_label(item: Item) -> str:
     return f"{prefix}{item.scade_il:%d/%m/%Y} ({when})"
 
 
-def analizza_prodotto(image: bytes, codice_manuale: str = "") -> dict:
-    """Foto -> proposta: Gemma (nome, categoria, data) + dettagli da codice a barre se disponibili."""
+def applica_barcode(prop: dict, code: str) -> dict:
+    """Aggiunge i dettagli del codice a barre (Open Food Facts) alla proposta."""
+    prop = {k: v for k, v in prop.items() if k != "da_barcode"}
+    prop["barcode"] = code
+    if info := barcode.lookup(code):
+        prop["nome"] = info["nome"]
+        prop["marca"], prop["confezione"] = info["marca"], info["confezione"]
+        if info["categoria"]:
+            prop["categoria"] = info["categoria"]
+        prop["da_barcode"] = True
+    return prop
+
+
+def analizza_prodotto(image: bytes) -> dict:
+    """Foto -> proposta: Gemma (nome, categoria, data) + dettagli da codice a barre se leggibile."""
     prop = vision.identify_product(image)
     if not dates.parse(prop.get("testo_data") or ""):
         # seconda passata dedicata alla sola data: più affidabile del prompt "tutto in uno"
         prop["testo_data"] = vision.read_label(image).get("testo_data", "")
-    code = codice_manuale.strip() or barcode.decode(image)
-    if code:
-        prop["barcode"] = code
-        if info := barcode.lookup(code):
-            prop["nome"] = info["nome"]
-            prop["marca"], prop["confezione"] = info["marca"], info["confezione"]
-            if info["categoria"]:
-                prop["categoria"] = info["categoria"]
-            prop["da_barcode"] = True
+    if code := barcode.decode(image):
+        prop = applica_barcode(prop, code)
     return prop
 
 
@@ -67,10 +73,10 @@ def item_form(proposal: dict, key: str) -> Item | None:
         if "confidenza" in proposal and proposal["confidenza"] is not None:
             st.caption(f"Confidenza modello: {proposal['confidenza']:.0%}")
         nome = st.text_input("Nome", proposal.get("nome", ""))
-        c0, c0b, c0c = st.columns(3)
+        c0, c0b = st.columns(2)
         marca = c0.text_input("Marca", proposal.get("marca") or "")
         confezione = c0b.text_input("Confezione", proposal.get("confezione") or "")
-        codice = c0c.text_input("Codice a barre", proposal.get("barcode") or "")
+        codice = proposal.get("barcode") or ""
         c1, c2 = st.columns(2)
         cat = proposal.get("categoria", "default")
         categoria = c1.selectbox("Categoria", CATS, index=CATS.index(cat) if cat in CATS else 0)
@@ -144,18 +150,32 @@ def page_aggiungi():
         img = st.file_uploader("Foto del prodotto", type=["jpg", "jpeg", "png"], key="foto") \
             or st.camera_input("…o scatta", key="cam")
         if img:
-            codice = st.text_input("Codice a barre (opzionale, se non si legge dalla foto)", key="ean")
-            if st.button("Analizza", key="a_foto"):
+            data = img.getvalue()
+            key = hashlib.md5(data).hexdigest()
+            if st.session_state.get("prop_key") != key:  # analisi automatica a ogni nuova foto
                 with st.spinner("Analisi in corso…"):
-                    st.session_state.prop = analizza_prodotto(img.getvalue(), codice)
+                    try:
+                        st.session_state.prop = analizza_prodotto(data)
+                    except Exception as e:  # noqa: BLE001
+                        st.session_state.pop("prop", None)
+                        st.error(f"Analisi non riuscita, riprova o inserisci a mano ({e})")
+                st.session_state.prop_key = key
             if "prop" in st.session_state:
-                if st.session_state.prop.get("da_barcode"):
+                prop = st.session_state.prop
+                codice = st.text_input("Codice a barre", prop.get("barcode") or "", key=f"ean_{key}",
+                                       help="Se non si legge dalla foto, scrivilo qui per cercare i dettagli.")
+                if codice and codice != prop.get("barcode") and barcode.valid_ean(codice):
+                    prop = st.session_state.prop = applica_barcode(prop, codice)
+                if prop.get("da_barcode"):
                     st.caption("Dettagli presi dal codice a barre (Open Food Facts). Puoi correggerli.")
-                elif st.session_state.prop.get("barcode"):
+                elif prop.get("barcode"):
                     st.caption("Codice letto ma prodotto non trovato: dettagli stimati dalla foto.")
-                item = item_form(st.session_state.prop, "f_foto")
+                item = item_form(prop, f"f_foto_{key}")
                 if item:
-                    db.add_item(item); del st.session_state["prop"]; st.success("Aggiunto")
+                    db.add_item(item)
+                    for k in ("prop", "prop_key"):
+                        st.session_state.pop(k, None)
+                    st.success("Aggiunto")
 
     with tab_label:
         items = db.list_items()
@@ -170,7 +190,7 @@ def page_aggiungi():
             if lab := st.session_state.get("lab"):
                 parsed = dates.parse(lab["testo_data"])
                 tipo = dates.kind(lab["tipo"].replace("_", " ")) if lab["tipo"] != "sconosciuto" else "unknown"
-                st.write(f"Letto: `{lab['testo_data']}` · confidenza {lab['confidenza']:.0%} · tipo: {tipo}")
+                st.write(f"Letto: `{lab['testo_data']}` · tipo: {tipo}")
                 final = st.date_input("Data verificata", parsed or date.today())
                 if st.button("Conferma data"):
                     db.update_item(target.id, scade_il=final, fonte_scadenza="label")
@@ -210,7 +230,7 @@ def page_ricette():
 
 ok, msg = vision.health()
 with st.sidebar:
-    st.markdown(f'<div class="brand"><img src="data:image/svg+xml;base64,{logo_b64()}">Fuorisaver</div>',
+    st.markdown(f'<div class="brand"><img src="data:image/png;base64,{logo_b64()}">Fuorisaver</div>',
                 unsafe_allow_html=True)
     page = st.radio("Pagina", ["Inventario", "Aggiungi", "Ricette"], label_visibility="collapsed")
     st.caption("Le scadenze sono stime: l'app non garantisce la sicurezza alimentare. "
