@@ -18,5 +18,8 @@ class Item(BaseModel):
     scade_il: date | None = None
     fonte_scadenza: FonteScadenza = "estimated"
     confidenza: float | None = None
+    barcode: str | None = None
+    marca: str | None = None
+    confezione: str | None = None  # es. "500 g"
     # None = in frigo; "consumato" | "buttato" quando rimosso
     esito: Literal["consumato", "buttato"] | None = None

@@ -1,3 +1,5 @@
+import base64
+import html
 import sys
 from datetime import date
 from pathlib import Path
@@ -7,10 +9,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import pandas as pd  # noqa: E402
 import streamlit as st  # noqa: E402
 
-from app import dates, db, receipt, recipes, shelf_life, vision  # noqa: E402
+from app import barcode, dates, db, receipt, recipes, shelf_life, vision  # noqa: E402
 from app.models import Item  # noqa: E402
 
-st.set_page_config(page_title="Frigo", page_icon="🧊")
+ROOT = Path(__file__).parent.parent
+st.set_page_config(page_title="Fuorisaver", page_icon=str(ROOT / "assets" / "favicon.png"))
+st.markdown(f"<style>{(Path(__file__).parent / 'style.css').read_text()}</style>", unsafe_allow_html=True)
 db.init()
 
 STATI = ["chiuso", "aperto", "cotto", "congelato"]
@@ -19,9 +23,15 @@ CATS = shelf_life.categorie()
 
 def semaforo(item: Item) -> str:
     if not item.scade_il:
-        return "⚪"
+        return "grey"
     d = (item.scade_il - date.today()).days
-    return "🔴" if d <= 2 else "🟡" if d <= 5 else "🟢"
+    return "red" if d <= 2 else "yellow" if d <= 5 else "green"
+
+
+def logo_b64() -> str:
+    # marchio con frigo crema su fondo trasparente; steli e piedini scuri diventano crema per il tema scuro
+    svg = (ROOT / "assets" / "fuorisaver-morso-mark.svg").read_text().replace("#2B1608", "#FFF3DF")
+    return base64.b64encode(svg.encode()).decode()
 
 
 def scadenza_label(item: Item) -> str:
@@ -33,12 +43,34 @@ def scadenza_label(item: Item) -> str:
     return f"{prefix}{item.scade_il:%d/%m/%Y} ({when})"
 
 
+def analizza_prodotto(image: bytes, codice_manuale: str = "") -> dict:
+    """Foto -> proposta: Gemma (nome, categoria, data) + dettagli da codice a barre se disponibili."""
+    prop = vision.identify_product(image)
+    if not dates.parse(prop.get("testo_data") or ""):
+        # seconda passata dedicata alla sola data: più affidabile del prompt "tutto in uno"
+        prop["testo_data"] = vision.read_label(image).get("testo_data", "")
+    code = codice_manuale.strip() or barcode.decode(image)
+    if code:
+        prop["barcode"] = code
+        if info := barcode.lookup(code):
+            prop["nome"] = info["nome"]
+            prop["marca"], prop["confezione"] = info["marca"], info["confezione"]
+            if info["categoria"]:
+                prop["categoria"] = info["categoria"]
+            prop["da_barcode"] = True
+    return prop
+
+
 def item_form(proposal: dict, key: str) -> Item | None:
     """Form di conferma: l'utente corregge sempre prima del salvataggio."""
     with st.form(key):
         if "confidenza" in proposal and proposal["confidenza"] is not None:
             st.caption(f"Confidenza modello: {proposal['confidenza']:.0%}")
         nome = st.text_input("Nome", proposal.get("nome", ""))
+        c0, c0b, c0c = st.columns(3)
+        marca = c0.text_input("Marca", proposal.get("marca") or "")
+        confezione = c0b.text_input("Confezione", proposal.get("confezione") or "")
+        codice = c0c.text_input("Codice a barre", proposal.get("barcode") or "")
         c1, c2 = st.columns(2)
         cat = proposal.get("categoria", "default")
         categoria = c1.selectbox("Categoria", CATS, index=CATS.index(cat) if cat in CATS else 0)
@@ -55,6 +87,7 @@ def item_form(proposal: dict, key: str) -> Item | None:
             return Item(
                 nome=nome, categoria=categoria, stato=stato, qty=qty, prezzo=prezzo or None,
                 acquistato_il=bought, confidenza=proposal.get("confidenza"),
+                marca=marca or None, confezione=confezione or None, barcode=codice or None,
                 scade_il=manual or shelf_life.estimate(categoria, stato, bought),
                 fonte_scadenza=fonte)
     return None
@@ -62,33 +95,64 @@ def item_form(proposal: dict, key: str) -> Item | None:
 
 def page_inventario():
     items = db.list_items()
+    st.markdown(f'<div class="page-head"><h1>Inventario</h1><span>{date.today():%d/%m/%Y}</span></div>',
+                unsafe_allow_html=True)
     if not items:
         st.info("Il frigo è vuoto. Aggiungi qualcosa dalla pagina Aggiungi.")
     urgenti = [i for i in items if i.scade_il and (i.scade_il - date.today()).days <= 2]
     if urgenti:
-        st.warning("In scadenza: " + ", ".join(i.nome for i in urgenti))
+        nomi = html.escape(", ".join(i.nome for i in urgenti))
+        st.markdown(f'<div class="alert">In scadenza: {nomi}</div>', unsafe_allow_html=True)
     for i in items:
-        c1, c2, c3, c4 = st.columns([5, 4, 1, 1])
-        c1.write(f"{semaforo(i)} **{i.nome}** ×{i.qty:g} · {i.stato}")
-        c2.write(scadenza_label(i))
-        if c3.button("✅", key=f"c{i.id}", help="Consumato"):
+        col = semaforo(i)
+        c1, c2, c3 = st.columns([20, 1, 1])
+        meta = html.escape(f"{i.categoria} · {i.stato}" + (f" · {i.marca}" if i.marca else ""))
+        c1.markdown(
+            f'<div class="row"><span class="dot {col}"></span>'
+            f'<span class="name">{html.escape(i.nome)} <small>×{i.qty:g}</small></span>'
+            f'<span class="meta">{meta}</span>'
+            f'<span class="when {col}">{scadenza_label(i)}</span></div>', unsafe_allow_html=True)
+        if c2.button("✓", key=f"c{i.id}", help="Consumato"):
             db.set_esito(i.id, "consumato"); st.rerun()
-        if c4.button("🗑️", key=f"b{i.id}", help="Buttato"):
+        if c3.button("⌫", key=f"b{i.id}", help="Buttato"):
             db.set_esito(i.id, "buttato"); st.rerun()
-    st.metric("Spreco totale", f"{db.wasted_euro():.2f} €")
+        with st.expander(f"Modifica {i.nome}"):
+            with st.form(f"e{i.id}"):
+                nome = st.text_input("Nome", i.nome)
+                e1, e2 = st.columns(2)
+                cat = e1.selectbox("Categoria", CATS, index=CATS.index(i.categoria) if i.categoria in CATS else 0)
+                stato = e2.selectbox("Stato", STATI, index=STATI.index(i.stato))
+                qty = e1.number_input("Quantità", 0.0, value=float(i.qty))
+                scad = e2.date_input("Scadenza", i.scade_il)
+                if st.form_submit_button("Salva modifiche"):
+                    fields = dict(nome=nome, categoria=cat, stato=stato, qty=qty)
+                    if scad and scad != i.scade_il:
+                        fields.update(scade_il=scad, fonte_scadenza="manual")
+                    db.update_item(i.id, **fields); st.rerun()
+    spreco = f"{db.wasted_euro():.2f}".replace(".", ",")
+    st.markdown(
+        f'<div class="waste"><span class="lbl">Spreco totale</span>'
+        f'<span class="val">{spreco} €</span></div>', unsafe_allow_html=True)
 
 
 def page_aggiungi():
-    tab_foto, tab_label, tab_scontrino, tab_man = st.tabs(["Foto prodotto", "Etichetta", "Scontrino", "Manuale"])
+    st.markdown('<div class="page-head"><h1>Aggiungi</h1></div>', unsafe_allow_html=True)
+    tab_foto, tab_label, tab_man, tab_scontrino = st.tabs(
+        ["Foto prodotto", "Etichetta", "Manuale", "Scontrino (beta)"])
 
     with tab_foto:
         img = st.file_uploader("Foto del prodotto", type=["jpg", "jpeg", "png"], key="foto") \
             or st.camera_input("…o scatta", key="cam")
         if img:
+            codice = st.text_input("Codice a barre (opzionale, se non si legge dalla foto)", key="ean")
             if st.button("Analizza", key="a_foto"):
-                with st.spinner("Gemma sta guardando…"):
-                    st.session_state.prop = vision.identify_product(img.getvalue())
+                with st.spinner("Analisi in corso…"):
+                    st.session_state.prop = analizza_prodotto(img.getvalue(), codice)
             if "prop" in st.session_state:
+                if st.session_state.prop.get("da_barcode"):
+                    st.caption("Dettagli presi dal codice a barre (Open Food Facts). Puoi correggerli.")
+                elif st.session_state.prop.get("barcode"):
+                    st.caption("Codice letto ma prodotto non trovato: dettagli stimati dalla foto.")
                 item = item_form(st.session_state.prop, "f_foto")
                 if item:
                     db.add_item(item); del st.session_state["prop"]; st.success("Aggiunto")
@@ -101,7 +165,7 @@ def page_aggiungi():
             target = st.selectbox("Prodotto", items, format_func=lambda i: f"{i.nome} ({scadenza_label(i)})")
             img = st.file_uploader("Foto etichetta", type=["jpg", "jpeg", "png"], key="lab")
             if img and st.button("Leggi data"):
-                with st.spinner("Lettura…"):
+                with st.spinner("Analisi in corso…"):
                     st.session_state.lab = vision.read_label(img.getvalue())
             if lab := st.session_state.get("lab"):
                 parsed = dates.parse(lab["testo_data"])
@@ -115,7 +179,7 @@ def page_aggiungi():
     with tab_scontrino:
         img = st.file_uploader("Foto scontrino", type=["jpg", "jpeg", "png"], key="rec")
         if img and st.button("Leggi scontrino"):
-            with st.spinner("Lettura scontrino…"):
+            with st.spinner("Analisi in corso…"):
                 st.session_state.rec = [i.model_dump() for i in receipt.parse_receipt(img.getvalue())]
         if "rec" in st.session_state:
             cols = ["nome", "categoria", "stato", "qty", "prezzo", "acquistato_il", "scade_il"]
@@ -137,15 +201,20 @@ def page_aggiungi():
 
 
 def page_ricette():
+    st.markdown('<div class="page-head"><h1>Ricette</h1></div>', unsafe_allow_html=True)
     items = db.list_items()
     if st.button("Suggerisci ricette") and items:
-        with st.spinner("Penso a qualcosa di buono…"):
+        with st.spinner("Sto preparando le idee…"):
             st.markdown(recipes.suggest(items))
 
 
 ok, msg = vision.health()
-(st.sidebar.success if ok else st.sidebar.error)("Ollama OK" if ok else msg)
-page = st.sidebar.radio("Pagina", ["Inventario", "Aggiungi", "Ricette"])
-st.sidebar.caption("Le scadenze sono stime: l'app non garantisce la sicurezza alimentare. "
-                   "Controlla sempre aspetto e odore.")
+with st.sidebar:
+    st.markdown(f'<div class="brand"><img src="data:image/svg+xml;base64,{logo_b64()}">Fuorisaver</div>',
+                unsafe_allow_html=True)
+    page = st.radio("Pagina", ["Inventario", "Aggiungi", "Ricette"], label_visibility="collapsed")
+    st.caption("Le scadenze sono stime: l'app non garantisce la sicurezza alimentare. "
+               "Controlla sempre aspetto e odore.")
+    st.markdown(f'<div class="sidebar-foot"><span class="dot {"ok" if ok else "ko"}"></span>'
+                f'{"Ollama OK" if ok else html.escape(msg)}</div>', unsafe_allow_html=True)
 {"Inventario": page_inventario, "Aggiungi": page_aggiungi, "Ricette": page_ricette}[page]()

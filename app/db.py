@@ -28,8 +28,13 @@ def init() -> None:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nome TEXT NOT NULL, categoria TEXT, stato TEXT, qty REAL,
                 prezzo REAL, acquistato_il TEXT, scade_il TEXT,
-                fonte_scadenza TEXT, confidenza REAL, esito TEXT)"""
+                fonte_scadenza TEXT, confidenza REAL, esito TEXT,
+                barcode TEXT, marca TEXT, confezione TEXT)"""
         )
+        cols = {r["name"] for r in c.execute("PRAGMA table_info(items)")}
+        for col in ("barcode", "marca", "confezione"):  # migrazione DB creati prima
+            if col not in cols:
+                c.execute(f"ALTER TABLE items ADD COLUMN {col} TEXT")
 
 
 def add_item(item: Item) -> int:

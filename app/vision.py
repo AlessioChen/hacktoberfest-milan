@@ -1,11 +1,13 @@
 import base64
+import io
 import json
 import os
 
 import httpx
+from PIL import Image, ImageOps
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma4")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma4:e4b")
 
 
 def health() -> tuple[bool, str]:
@@ -15,18 +17,27 @@ def health() -> tuple[bool, str]:
         names = [m["name"] for m in r.json().get("models", [])]
     except Exception as e:  # noqa: BLE001
         return False, f"Ollama non raggiungibile ({OLLAMA_URL}): {e}"
-    if not any(n.split(":")[0] == OLLAMA_MODEL.split(":")[0] for n in names):
+    if OLLAMA_MODEL not in names and f"{OLLAMA_MODEL}:latest" not in names:
         return False, f"Modello '{OLLAMA_MODEL}' non trovato. Esegui: ollama pull {OLLAMA_MODEL}"
     return True, "ok"
+
+
+def prepare(image: bytes, max_side: int = 1280) -> bytes:
+    """Corregge l'orientamento EXIF e ridimensiona: più veloce e il testo resta leggibile."""
+    img = ImageOps.exif_transpose(Image.open(io.BytesIO(image))).convert("RGB")
+    img.thumbnail((max_side, max_side))
+    out = io.BytesIO()
+    img.save(out, "JPEG", quality=90)
+    return out.getvalue()
 
 
 def chat_json(prompt: str, schema: dict, image: bytes | None = None) -> dict:
     msg = {"role": "user", "content": prompt}
     if image:
-        msg["images"] = [base64.b64encode(image).decode()]
+        msg["images"] = [base64.b64encode(prepare(image)).decode()]
     r = httpx.post(
         f"{OLLAMA_URL}/api/chat",
-        json={"model": OLLAMA_MODEL, "messages": [msg], "format": schema, "stream": False,
+        json={"model": OLLAMA_MODEL, "messages": [msg], "format": schema, "stream": False, "think": False,
               "options": {"temperature": 0}},
         timeout=300,
     )
@@ -37,7 +48,8 @@ def chat_json(prompt: str, schema: dict, image: bytes | None = None) -> dict:
 def chat_text(prompt: str) -> str:
     r = httpx.post(
         f"{OLLAMA_URL}/api/chat",
-        json={"model": OLLAMA_MODEL, "messages": [{"role": "user", "content": prompt}], "stream": False},
+        json={"model": OLLAMA_MODEL, "messages": [{"role": "user", "content": prompt}], "stream": False,
+              "think": False},
         timeout=300,
     )
     r.raise_for_status()
@@ -85,9 +97,11 @@ LABEL_SCHEMA = {
 
 def read_label(image: bytes) -> dict:
     return chat_json(
-        "Leggi la data di scadenza sull'etichetta. Copia ESATTAMENTE il testo della data in "
-        "testo_data (es. '12/10/26', 'EXP 12.10.2026'). Indica se è 'da consumare entro', "
-        "'preferibilmente entro' o sconosciuto. Non inventare: se illeggibile lascia testo_data vuoto.",
+        "Leggi la data di scadenza stampata sull'etichetta: è fatta di CIFRE (es. '12/10/26', "
+        "'15 04 11', '2016 06 01', '13/12/2025'). Copia le cifre ESATTAMENTE in testo_data. "
+        "Ignora le scritte di formato come 'dd/mm/yyyy', i codici di lotto (L..., B...), "
+        "gli orari (12:09) e il testo descrittivo. Indica se la dicitura è 'da consumare entro', "
+        "'preferibilmente entro' o sconosciuto. Se non vedi cifre di una data lascia testo_data vuoto.",
         LABEL_SCHEMA, image)
 
 

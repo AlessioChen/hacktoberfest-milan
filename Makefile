@@ -1,4 +1,4 @@
-.PHONY: install run test up down logs build notify clean
+.PHONY: install run test up down logs build notify clean bench
 
 install:
 	uv sync
@@ -26,3 +26,6 @@ notify:
 
 clean:
 	rm -rf .venv .pytest_cache
+
+bench:
+	uv run python scripts/bench_labels.py
