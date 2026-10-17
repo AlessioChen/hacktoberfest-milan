@@ -3,1267 +3,408 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Frigo — Hacktoberfest Milan 2026</title>
+<title>fuorisaver — Hacktoberfest Milan 2026</title>
 <link rel="icon" type="image/png" href="../assets/favicon.png">
 <style>
   :root {
-    --ink: #0b1220;
-    --ink-2: #121d31;
-    --cream: #f6f2e7;
-    --paper: #fbf8ef;
-    --lime: #c8f169;
-    --coral: #ff7a59;
-    --sky: #8bd3ff;
-    --muted: #96a3b6;
-    --line: rgba(246, 242, 231, .14);
-    --accent: #c8f169;
-    --accent-soft: rgba(200, 241, 105, .12);
-    --fg: #f6f2e7;
+    /* brand */
+    --brown: #2B1608;
+    --bg: #160C05;
+    --bg-2: #241209;
+    --panel: #2b1608;
+    --cream: #FFF3DF;
+    --cream-2: #F3E4C9;
+    --orange: #FF7A2F;
+    --orange-2: #E2560F;
+    --green: #3DBA78;
+    --yellow: #FFC24A;
+    --red: #FF5A3C;
+    --ink-ui: #1A0E06;
+    --muted-dark: #C6AC8F;
+    --muted-light: #7C6248;
   }
 
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
   body {
-    background: #05080e;
+    background: #0b0602;
     color: var(--cream);
-    font-family: Inter, "Inter Display", "Helvetica Neue", Arial, sans-serif;
+    font-family: Inter, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
   }
   button { font: inherit; }
   em { font-style: normal; }
+  h1, h2, h3, h4, p { margin: 0; }
+  h1, h2, h3, h4 { font-family: Inter, "Helvetica Neue", Arial, sans-serif; letter-spacing: -.045em; }
 
   .deck-viewport {
-    position: fixed;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    background:
-      radial-gradient(circle at 50% 40%, rgba(34, 52, 84, .35), transparent 55%),
-      #05080e;
+    position: fixed; inset: 0;
+    display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 40%, rgba(60,30,12,.55), transparent 60%), #0b0602;
   }
-  .stage {
-    width: 1280px;
-    height: 720px;
-    position: relative;
-    transform-origin: center center;
-    flex: 0 0 auto;
-  }
+  .stage { width: 1280px; height: 720px; position: relative; transform-origin: center center; flex: 0 0 auto; }
 
+  /* ---------- slide base ---------- */
   .slide {
     --fg: var(--cream);
-    --muted: #96a3b6;
-    --line: rgba(246, 242, 231, .14);
-    --accent: var(--lime);
-    --accent-soft: rgba(200, 241, 105, .12);
-    position: absolute;
-    inset: 0;
-    display: none;
-    overflow: hidden;
-    padding: 62px 78px 54px;
+    --muted: var(--muted-dark);
+    --line: rgba(255,243,223,.13);
+    --accent: var(--orange);
+    --accent-soft: rgba(255,122,47,.14);
+    position: absolute; inset: 0;
+    display: none; overflow: hidden;
+    padding: 58px 78px 52px;
     color: var(--fg);
     background:
-      radial-gradient(circle at 86% 8%, rgba(200, 241, 105, .08), transparent 28%),
-      radial-gradient(circle at 5% 92%, rgba(139, 211, 255, .07), transparent 32%),
-      var(--ink);
+      radial-gradient(circle at 88% 6%, rgba(255,122,47,.12), transparent 28%),
+      radial-gradient(circle at 4% 96%, rgba(61,186,120,.09), transparent 30%),
+      var(--bg);
     isolation: isolate;
   }
   .slide::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: .22;
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .22; z-index: -1;
     background-image:
-      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      linear-gradient(rgba(255,243,223,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,243,223,.035) 1px, transparent 1px);
     background-size: 48px 48px;
     mask-image: linear-gradient(to bottom, #000, transparent 88%);
-    z-index: -1;
   }
   .slide.active { display: block; }
+
   .slide.light {
-    --fg: var(--ink);
-    --muted: #5c6676;
-    --line: rgba(11, 18, 32, .14);
-    --accent: #e45b3d;
-    --accent-soft: rgba(228, 91, 61, .10);
+    --fg: var(--brown);
+    --muted: var(--muted-light);
+    --line: rgba(43,22,8,.15);
+    --accent: var(--orange-2);
+    --accent-soft: rgba(226,86,15,.10);
     background:
-      radial-gradient(circle at 90% 0%, rgba(228, 91, 61, .10), transparent 28%),
-      radial-gradient(circle at 0% 100%, rgba(200, 241, 105, .25), transparent 32%),
+      radial-gradient(circle at 92% 0%, rgba(255,122,47,.16), transparent 30%),
+      radial-gradient(circle at 0% 100%, rgba(61,186,120,.14), transparent 32%),
       var(--cream);
   }
   .slide.light::before {
-    opacity: .34;
+    opacity: .4;
     background-image:
-      linear-gradient(rgba(11,18,32,.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(11,18,32,.05) 1px, transparent 1px);
+      linear-gradient(rgba(43,22,8,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(43,22,8,.05) 1px, transparent 1px);
     background-size: 42px 42px;
     mask-image: linear-gradient(to bottom, #000, transparent 95%);
   }
+
   .slide.accent {
-    --fg: var(--ink);
-    --muted: #44501d;
-    --line: rgba(11, 18, 32, .16);
-    --accent: #0b1220;
-    --accent-soft: rgba(11, 18, 32, .08);
+    --fg: var(--brown);
+    --muted: #5b3a1e;
+    --line: rgba(43,22,8,.22);
+    --accent: var(--brown);
+    --accent-soft: rgba(43,22,8,.08);
     background:
-      radial-gradient(circle at 82% 18%, rgba(255,255,255,.36), transparent 33%),
-      radial-gradient(circle at 10% 100%, rgba(255,122,89,.24), transparent 36%),
-      var(--lime);
+      radial-gradient(circle at 80% 16%, rgba(255,243,223,.55), transparent 34%),
+      radial-gradient(circle at 8% 100%, rgba(226,86,15,.4), transparent 36%),
+      var(--orange);
   }
   .slide.accent::before { display: none; }
 
-  .anim { animation: rise .62s cubic-bezier(.22,.8,.28,1) both; animation-delay: var(--d, 0s); }
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .float { animation: float 5.5s ease-in-out infinite; }
-  @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(-3.5deg); }
-    50% { transform: translateY(-9px) rotate(-3.5deg); }
-  }
+  .anim { animation: rise .6s cubic-bezier(.22,.8,.28,1) both; animation-delay: var(--d, 0s); }
+  @keyframes rise { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  .float { animation: float 6s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-9px) rotate(-3deg); } }
 
+  /* ---------- type ---------- */
   .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .21em;
-    text-transform: uppercase;
-    color: var(--muted);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 700; letter-spacing: .21em; text-transform: uppercase; color: var(--muted);
   }
-  .eyebrow .tick {
-    width: 20px; height: 2px; border-radius: 99px;
-    background: var(--accent);
-    display: inline-block;
-  }
-  .eyebrow strong { color: var(--accent); font-weight: 700; }
+  .eyebrow .tick { width: 20px; height: 2px; border-radius: 99px; background: var(--accent); display: inline-block; }
+  .eyebrow strong { color: var(--accent); font-weight: 800; }
 
-  h1, h2, h3, p { margin: 0; }
-  h1, h2, h3 {
-    font-family: "Inter Display", Inter, "Helvetica Neue", Arial, sans-serif;
-    letter-spacing: -.045em;
-  }
-  h2 {
-    font-size: 54px;
-    line-height: 1.02;
-    font-weight: 700;
-    max-width: 980px;
-    margin-top: 18px;
-  }
-  h2 .mark {
-    color: var(--accent);
-  }
-  .sub {
-    font-size: 17px;
-    line-height: 1.55;
-    color: var(--muted);
-    max-width: 760px;
-    margin-top: 16px;
-  }
+  h2 { font-size: 54px; line-height: 1.02; font-weight: 750; max-width: 1000px; margin-top: 18px; }
+  h2 .mark { color: var(--accent); }
+  h2 .serif { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 500; letter-spacing: -.02em; }
+  .sub { font-size: 17px; line-height: 1.55; color: var(--muted); max-width: 780px; margin-top: 16px; }
+  .sub strong { color: var(--fg); font-weight: 650; }
+
+  /* brand lockup */
+  .brand-lockup { display: flex; align-items: center; gap: 10px; }
+  .brand-tile { display: block; height: 26px; width: auto; border-radius: 6px; flex: 0 0 auto; }
+  .wordmark { font-size: 22px; font-weight: 800; letter-spacing: -.03em; color: var(--fg); }
 
   .footer {
-    position: absolute;
-    left: 78px; right: 78px; bottom: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    z-index: 5;
+    position: absolute; left: 78px; right: 78px; bottom: 24px; z-index: 5;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
   }
   .footer .brand { display: flex; align-items: center; gap: 9px; color: var(--fg); }
-  .brand-mark {
-    display: block;
-    width: auto;
-    height: 19px;
-    flex: 0 0 auto;
-  }
-  .brand-tile { border-radius: 3px; }
+  .footer .brand-tile { height: 18px; }
   .footer .page { font-variant-numeric: tabular-nums; }
   .footer .page b { color: var(--fg); }
 
   /* ---------- cover ---------- */
-  .cover { padding: 58px 78px 48px; }
-  .cover .orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(2px);
-    pointer-events: none;
-    z-index: -1;
-  }
-  .cover .orb-a {
-    width: 560px; height: 560px;
-    right: -100px; top: -180px;
-    background: radial-gradient(circle, rgba(200,241,105,.19), transparent 66%);
-  }
-  .cover .orb-b {
-    width: 430px; height: 430px;
-    left: -170px; bottom: -230px;
-    background: radial-gradient(circle, rgba(139,211,255,.14), transparent 68%);
-  }
-  .cover-grid {
-    display: grid;
-    grid-template-columns: 1.08fr .92fr;
-    gap: 30px;
-    height: 100%;
-    align-items: center;
-  }
-  .cover-copy { padding-bottom: 16px; }
-  .cover h1 {
-    font-size: 94px;
-    line-height: .91;
-    font-weight: 700;
-    letter-spacing: -.065em;
-    margin-top: 24px;
-  }
-  .cover h1 .serif {
-    font-family: "EB Garamond", Georgia, serif;
-    font-style: italic;
-    font-weight: 500;
-    letter-spacing: -.025em;
-    color: var(--lime);
-  }
-  .cover .lede {
-    margin-top: 26px;
-    max-width: 520px;
-    font-size: 18px;
-    line-height: 1.55;
-    color: #b9c3d1;
-  }
-  .cover .lede strong { color: var(--cream); font-weight: 600; }
-  .cover-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 28px;
-  }
+  .cover { padding: 52px 78px 44px; }
+  .cover .orb { position: absolute; border-radius: 50%; filter: blur(2px); pointer-events: none; z-index: -1; }
+  .cover .orb-a { width: 580px; height: 580px; right: -120px; top: -190px; background: radial-gradient(circle, rgba(255,122,47,.22), transparent 66%); }
+  .cover .orb-b { width: 440px; height: 440px; left: -180px; bottom: -240px; background: radial-gradient(circle, rgba(61,186,120,.16), transparent 68%); }
+  .cover-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 28px; height: 100%; align-items: center; }
+  .cover-copy { padding-bottom: 10px; }
+  .cover .brand-lockup { margin-bottom: 26px; }
+  .cover .brand-tile { height: 40px; border-radius: 9px; }
+  .cover .wordmark { font-size: 30px; }
+  .cover h1 { font-size: 82px; line-height: .93; font-weight: 800; letter-spacing: -.05em; margin-top: 20px; }
+  .cover h1 .serif { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 500; color: var(--accent); letter-spacing: -.02em; }
+  .lede { font-size: 17px; line-height: 1.55; color: var(--muted); max-width: 560px; margin-top: 20px; }
+  .lede strong { color: var(--fg); font-weight: 650; }
+  .cover-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
   .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 12px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: .04em;
-    color: #c7cfda;
-    background: rgba(255,255,255,.025);
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line);
+    font-size: 10.5px; font-weight: 600; color: var(--fg); background: rgba(255,243,223,.03);
   }
-  .tag .dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--lime);
-    box-shadow: 0 0 9px rgba(200,241,105,.8);
-  }
-  .cover-foot {
-    position: absolute;
-    left: 78px; bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: #627086;
-  }
-  .cover-foot .brand-mark { height: 17px; }
+  .tag .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 9px rgba(255,122,47,.85); }
 
-  .cover-art {
-    position: relative;
-    height: 540px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .glow {
-    position: absolute;
-    width: 360px; height: 360px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(200,241,105,.21), transparent 67%);
-    filter: blur(8px);
-  }
+  .cover-art { position: relative; height: 545px; display: flex; align-items: center; justify-content: center; }
+  .glow { position: absolute; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(255,122,47,.22), transparent 67%); filter: blur(8px); }
   .app-card {
-    position: relative;
-    width: 376px;
-    border-radius: 26px;
-    padding: 20px;
-    background: linear-gradient(150deg, rgba(25,39,61,.96), rgba(12,20,34,.98));
-    border: 1px solid rgba(255,255,255,.13);
-    box-shadow: 0 34px 90px rgba(0,0,0,.48), 0 0 0 1px rgba(0,0,0,.15);
+    position: relative; width: 380px; border-radius: 26px; padding: 20px;
+    background: linear-gradient(150deg, rgba(43,23,10,.97), rgba(20,11,5,.99));
+    border: 1px solid rgba(255,243,223,.14);
+    box-shadow: 0 34px 90px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.2);
     transform: rotate(-3.5deg);
   }
-  .app-card::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 26px;
-    background: linear-gradient(120deg, rgba(255,255,255,.08), transparent 40%);
-    pointer-events: none;
-  }
-  .mini-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 2px 3px 14px;
-    border-bottom: 1px solid rgba(255,255,255,.09);
-    font-size: 12px;
-    font-weight: 700;
-    color: #eff4dc;
-  }
-  .mini-brand { display: flex; align-items: center; gap: 7px; }
-  .mini-brand .brand-mark { height: 16px; }
-  .mini-head .badge {
-    padding: 4px 7px;
-    border-radius: 999px;
-    background: rgba(255,122,89,.12);
-    color: #ff9a82;
-    font-size: 8px;
-    letter-spacing: .07em;
-    text-transform: uppercase;
-  }
+  .app-card::after { content: ""; position: absolute; inset: 0; border-radius: 26px; background: linear-gradient(120deg, rgba(255,243,223,.08), transparent 40%); pointer-events: none; }
+  .mini-head { display: flex; align-items: center; justify-content: space-between; padding: 2px 3px 14px; border-bottom: 1px solid rgba(255,243,223,.1); font-size: 12px; font-weight: 700; color: var(--cream); }
+  .mini-brand { display: flex; align-items: center; gap: 8px; }
+  .mini-brand .brand-tile { height: 17px; border-radius: 4px; }
+  .mini-head .badge { padding: 4px 8px; border-radius: 999px; background: rgba(255,90,60,.14); color: #ff9d84; font-size: 8px; letter-spacing: .07em; text-transform: uppercase; }
   .mini-rows { padding-top: 5px; }
-  .mini-row {
-    display: grid;
-    grid-template-columns: 10px 1fr auto;
-    gap: 9px;
-    align-items: center;
-    padding: 12px 4px;
-    border-bottom: 1px solid rgba(255,255,255,.065);
-  }
+  .mini-row { display: grid; grid-template-columns: 10px 1fr auto; gap: 9px; align-items: center; padding: 11.5px 4px; border-bottom: 1px solid rgba(255,243,223,.07); }
   .mini-row:last-child { border-bottom: 0; }
-  .mini-row .light { width: 7px; height: 7px; border-radius: 50%; }
-  .red { background: var(--coral); box-shadow: 0 0 12px rgba(255,122,89,.6); }
-  .yellow { background: #ffd166; box-shadow: 0 0 12px rgba(255,209,102,.45); }
-  .green { background: var(--lime); box-shadow: 0 0 12px rgba(200,241,105,.45); }
-  .mini-name { font-size: 11.5px; font-weight: 600; color: #f2f4ea; }
-  .mini-meta { font-size: 8.5px; color: #8190a5; margin-top: 2px; letter-spacing: .02em; }
-  .mini-when { font-size: 9px; color: #aab5c4; text-align: right; }
-  .mini-when.late { color: #ff9a82; }
-  .mini-metric {
-    margin-top: 10px;
-    padding: 12px 14px;
-    border-radius: 13px;
-    background: rgba(200,241,105,.08);
-    border: 1px solid rgba(200,241,105,.16);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .mini-metric span { font-size: 8.5px; letter-spacing: .08em; text-transform: uppercase; color: #aeb99b; }
-  .mini-metric b { font-size: 18px; letter-spacing: -.03em; color: var(--lime); }
+  .light-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .light-dot.red { background: var(--red); box-shadow: 0 0 12px rgba(255,90,60,.6); }
+  .light-dot.yellow { background: var(--yellow); box-shadow: 0 0 12px rgba(255,194,74,.5); }
+  .light-dot.green { background: var(--green); box-shadow: 0 0 12px rgba(61,186,120,.5); }
+  .mini-name { font-size: 11.5px; font-weight: 600; color: #fff8ec; }
+  .mini-meta { font-size: 8.5px; color: #a98f74; margin-top: 2px; letter-spacing: .02em; }
+  .mini-when { font-size: 9px; color: #cbb69d; text-align: right; }
+  .mini-when.late { color: #ff9d84; }
+  .mini-metric { margin-top: 10px; padding: 12px 14px; border-radius: 13px; background: rgba(255,122,47,.1); border: 1px solid rgba(255,122,47,.22); display: flex; align-items: center; justify-content: space-between; }
+  .mini-metric span { font-size: 8.5px; letter-spacing: .08em; text-transform: uppercase; color: #d8a67e; }
+  .mini-metric b { font-size: 19px; letter-spacing: -.03em; color: var(--orange); }
 
-  .sticker {
-    position: absolute;
-    padding: 10px 14px;
-    border-radius: 999px;
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: .13em;
-    text-transform: uppercase;
-    box-shadow: 0 12px 28px rgba(0,0,0,.26);
-  }
-  .sticker-one {
-    right: -4px;
-    top: 104px;
-    background: var(--coral);
-    color: #2c0e07;
-    transform: rotate(7deg);
-  }
-  .sticker-two {
-    left: -20px;
-    bottom: 94px;
-    background: var(--lime);
-    color: #17200a;
-    transform: rotate(-7deg);
-  }
-  .sticker-three {
-    right: 18px;
-    bottom: 58px;
-    background: #f6f2e7;
-    color: #0b1220;
-    transform: rotate(3deg);
-  }
+  .sticker { position: absolute; padding: 10px 14px; border-radius: 999px; font-size: 9px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; box-shadow: 0 12px 28px rgba(0,0,0,.3); }
+  .sticker-one { right: -6px; top: 106px; background: var(--red); color: #2c0e07; transform: rotate(7deg); }
+  .sticker-two { left: -22px; bottom: 98px; background: var(--green); color: #05230f; transform: rotate(-7deg); }
+  .sticker-three { right: 16px; bottom: 60px; background: var(--cream); color: var(--brown); transform: rotate(3deg); }
 
-  /* ---------- generic layouts ---------- */
-  .content { margin-top: 34px; }
-  .problem-grid {
-    display: grid;
-    grid-template-columns: .78fr 1.22fr;
-    gap: 54px;
-    align-items: stretch;
-    margin-top: 30px;
-  }
-  .stat-box {
-    padding: 30px 32px;
-    border: 1px solid var(--line);
-    border-radius: 22px;
-    background: rgba(255,255,255,.18);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 292px;
-  }
-  .slide.light .stat-box { background: rgba(255,255,255,.52); }
-  .huge-stat {
-    font-family: "Inter Display", Inter, sans-serif;
-    font-size: 136px;
-    line-height: .82;
-    letter-spacing: -.08em;
-    font-weight: 700;
-    color: var(--accent);
-  }
-  .stat-copy { font-size: 17px; line-height: 1.45; max-width: 280px; }
-  .source {
-    display: block;
-    margin-top: 14px;
-    font-size: 9px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .reason-list { display: flex; flex-direction: column; gap: 10px; }
-  .reason {
-    display: grid;
-    grid-template-columns: 42px 1fr;
-    gap: 16px;
-    padding: 15px 18px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    background: rgba(255,255,255,.16);
-  }
-  .slide.light .reason { background: rgba(255,255,255,.44); }
-  .reason .n {
-    font-family: "Inter Display", Inter, sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: .04em;
-    padding-top: 2px;
-  }
-  .reason h3 { font-size: 15px; letter-spacing: -.01em; }
-  .reason p { margin-top: 3px; font-size: 12.5px; line-height: 1.4; color: var(--muted); }
-  .bottom-note {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    margin-top: 20px;
-    font-size: 11.5px;
-    color: var(--muted);
-  }
-  .bottom-note::before {
-    content: "";
-    width: 30px; height: 1px; background: var(--accent);
-    flex: 0 0 auto;
-  }
+  /* ---------- generic ---------- */
+  .bottom-note { display: flex; align-items: center; gap: 13px; margin-top: 20px; font-size: 11.5px; color: var(--muted); }
+  .bottom-note::before { content: ""; width: 30px; height: 1px; background: var(--accent); flex: 0 0 auto; }
   .bottom-note b { color: var(--fg); font-weight: 650; }
 
-  /* ---------- insight flow ---------- */
-  .flow {
-    display: grid;
-    grid-template-columns: 1fr 36px 1fr 36px 1fr;
-    align-items: stretch;
-    gap: 0;
-    margin-top: 44px;
-  }
-  .flow-card {
-    padding: 25px 23px;
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    background: rgba(255,255,255,.035);
-    min-height: 208px;
-  }
-  .flow-icon {
-    width: 38px; height: 38px;
-    display: grid; place-items: center;
-    border-radius: 11px;
-    background: var(--accent-soft);
-    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
-    font-size: 18px;
-    margin-bottom: 17px;
-  }
-  .flow-card .k {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
+  .problem-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 46px; align-items: stretch; margin-top: 30px; }
+  .stat-box { padding: 28px 30px; border: 1px solid var(--line); border-radius: 22px; background: rgba(255,243,223,.5); display: flex; flex-direction: column; justify-content: space-between; min-height: 288px; }
+  .slide:not(.light) .stat-box { background: rgba(255,243,223,.04); }
+  .huge-stat { font-size: 132px; line-height: .82; letter-spacing: -.08em; font-weight: 800; color: var(--accent); }
+  .stat-copy { font-size: 16px; line-height: 1.45; max-width: 290px; margin-top: 16px; }
+  .source { display: block; margin-top: 14px; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .reason-list { display: flex; flex-direction: column; gap: 10px; }
+  .reason { display: grid; grid-template-columns: 42px 1fr; gap: 16px; padding: 15px 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,243,223,.42); }
+  .slide:not(.light) .reason { background: rgba(255,243,223,.04); }
+  .reason .n { font-size: 13px; font-weight: 800; color: var(--accent); letter-spacing: .04em; padding-top: 2px; }
+  .reason h3 { font-size: 15px; letter-spacing: -.01em; }
+  .reason p { margin-top: 3px; font-size: 12.5px; line-height: 1.4; color: var(--muted); }
+
+  /* insight flow */
+  .flow { display: grid; grid-template-columns: 1fr 34px 1fr 34px 1fr; align-items: stretch; margin-top: 40px; }
+  .flow-card { padding: 24px 22px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,243,223,.05); min-height: 200px; }
+  .flow-icon { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 11px; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); font-size: 18px; margin-bottom: 16px; }
+  .flow-card .k { font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
   .flow-card h3 { font-size: 17px; margin-top: 5px; }
   .flow-card p { font-size: 12.5px; line-height: 1.45; color: var(--muted); margin-top: 7px; }
-  .flow-arrow {
-    display: grid;
-    place-items: center;
-    color: var(--accent);
-    font-size: 17px;
-    opacity: .8;
-  }
-  .insight-line {
-    margin-top: 28px;
-    padding: 18px 24px;
-    border-left: 3px solid var(--accent);
-    background: var(--accent-soft);
-    font-size: 21px;
-    line-height: 1.35;
-    letter-spacing: -.025em;
-    max-width: 1010px;
-  }
+  .flow-arrow { display: grid; place-items: center; color: var(--accent); font-size: 17px; opacity: .85; }
+  .insight-line { margin-top: 26px; padding: 18px 24px; border-left: 3px solid var(--accent); background: var(--accent-soft); font-size: 21px; line-height: 1.35; letter-spacing: -.025em; max-width: 1010px; }
   .insight-line b { color: var(--accent); }
 
-  /* ---------- solution ---------- */
-  .solution-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-top: 32px;
-  }
-  .solution-card {
-    position: relative;
-    padding: 24px 22px 22px;
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    background: rgba(255,255,255,.48);
-    min-height: 268px;
-    overflow: hidden;
-  }
-  .solution-card .big-n {
-    position: absolute;
-    right: 16px; top: 4px;
-    font-family: "Inter Display", Inter, sans-serif;
-    font-size: 68px;
-    line-height: 1;
-    font-weight: 700;
-    letter-spacing: -.07em;
-    color: rgba(11,18,32,.075);
-  }
-  .solution-card .ico {
-    width: 45px; height: 45px;
-    display: grid; place-items: center;
-    border-radius: 13px;
-    background: var(--ink);
-    color: var(--lime);
-    font-size: 21px;
-    margin-bottom: 24px;
-  }
-  .solution-card h3 { font-size: 21px; letter-spacing: -.03em; }
-  .solution-card p { font-size: 13px; line-height: 1.5; color: var(--muted); margin-top: 9px; }
-  .solution-card .micro {
-    margin-top: 18px;
-    font-size: 9px;
-    font-weight: 750;
-    letter-spacing: .13em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  .solution-foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    margin-top: 23px;
-    padding: 16px 20px;
-    border-radius: 15px;
-    background: var(--ink);
-    color: var(--cream);
-  }
-  .solution-foot p { font-size: 15px; letter-spacing: -.01em; }
-  .solution-foot b { color: var(--lime); }
+  /* solution */
+  .sol-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin-top: 30px; }
+  .sol-card { position: relative; padding: 22px 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,243,223,.5); min-height: 296px; overflow: hidden; }
+  .sol-card .big-n { position: absolute; right: 14px; top: 2px; font-size: 58px; line-height: 1; font-weight: 800; letter-spacing: -.07em; color: rgba(43,22,8,.09); }
+  .sol-card .ico { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 13px; background: var(--brown); color: var(--orange); font-size: 20px; margin-bottom: 20px; }
+  .sol-card h3 { font-size: 19px; letter-spacing: -.03em; }
+  .sol-card p { font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-top: 8px; }
+  .sol-card .micro { margin-top: 16px; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .sol-foot { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 22px; padding: 16px 20px; border-radius: 15px; background: var(--brown); color: var(--cream); }
+  .sol-foot p { font-size: 15px; letter-spacing: -.01em; }
+  .sol-foot b { color: var(--orange); }
   .lights { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
   .lights span { width: 11px; height: 11px; border-radius: 50%; }
-  .lights .r { background: var(--coral); }
-  .lights .y { background: #ffd166; }
-  .lights .g { background: var(--lime); }
+  .lights .r { background: var(--red); } .lights .y { background: var(--yellow); } .lights .g { background: var(--green); }
 
-  /* ---------- demo mock ---------- */
-  .demo-grid {
-    display: grid;
-    grid-template-columns: 1.35fr .65fr;
-    gap: 38px;
-    align-items: center;
-    margin-top: 25px;
-  }
-  .window {
-    position: relative;
-    display: grid;
-    grid-template-columns: 138px 1fr;
-    width: 100%;
-    height: 396px;
-    border-radius: 18px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,.13);
-    box-shadow: 0 28px 70px rgba(0,0,0,.44);
-    background: #0d1727;
-  }
-  .win-side {
-    padding: 18px 14px;
-    background: #0a111d;
-    border-right: 1px solid rgba(255,255,255,.07);
-    display: flex;
-    flex-direction: column;
-  }
-  .win-brand {
-    display: flex; align-items: center; gap: 7px;
-    font-size: 13px; font-weight: 800; letter-spacing: -.02em;
-    color: #f1f5e9;
-  }
-  .win-brand .brand-mark { height: 16px; }
+  /* demo window */
+  .demo-grid { display: grid; grid-template-columns: 1.4fr .6fr; gap: 34px; align-items: center; margin-top: 22px; }
+  .window { position: relative; display: grid; grid-template-columns: 136px 1fr; width: 100%; height: 402px; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,243,223,.14); box-shadow: 0 28px 70px rgba(0,0,0,.5); background: #140b05; }
+  .win-side { padding: 18px 14px; background: #100801; border-right: 1px solid rgba(255,243,223,.08); display: flex; flex-direction: column; }
+  .win-brand { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 800; letter-spacing: -.02em; color: var(--cream); }
+  .win-brand .brand-tile { height: 16px; border-radius: 4px; }
   .win-nav { margin-top: 24px; display: flex; flex-direction: column; gap: 4px; }
-  .win-nav div {
-    padding: 8px 9px; border-radius: 7px;
-    font-size: 9.5px; color: #77869b;
-  }
-  .win-nav .on { background: rgba(200,241,105,.11); color: var(--lime); font-weight: 700; }
-  .win-health { margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.07); }
-  .win-health div { display: flex; align-items: center; gap: 6px; font-size: 8px; color: #7f8ea3; }
-  .win-health i { width: 5px; height: 5px; border-radius: 50%; background: var(--lime); }
-  .win-main { padding: 17px 20px; background: linear-gradient(145deg, #101c2e, #0b1422); }
+  .win-nav div { padding: 8px 9px; border-radius: 7px; font-size: 9.5px; color: #9a8064; }
+  .win-nav .on { background: rgba(255,122,47,.14); color: var(--orange); font-weight: 700; }
+  .win-health { margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,243,223,.08); }
+  .win-health div { display: flex; align-items: center; gap: 6px; font-size: 8px; color: #a18668; }
+  .win-health i { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+  .win-main { padding: 17px 20px; background: linear-gradient(145deg, #1c0f06, #120a04); }
   .win-title { display: flex; align-items: baseline; justify-content: space-between; }
-  .win-title h3 { font-size: 17px; letter-spacing: -.03em; color: #f4f7ed; }
-  .win-title span { font-size: 8px; color: #7e8ca0; letter-spacing: .08em; text-transform: uppercase; }
-  .win-alert {
-    margin-top: 11px; padding: 8px 10px;
-    border-radius: 7px;
-    background: rgba(255,122,89,.09);
-    border: 1px solid rgba(255,122,89,.17);
-    color: #ff9b83;
-    font-size: 8.5px;
-  }
+  .win-title h3 { font-size: 17px; letter-spacing: -.03em; color: #fff8ec; }
+  .win-title span { font-size: 8px; color: #a18668; letter-spacing: .08em; text-transform: uppercase; }
+  .win-alert { margin-top: 11px; padding: 8px 10px; border-radius: 7px; background: rgba(255,90,60,.1); border: 1px solid rgba(255,90,60,.22); color: #ff9d84; font-size: 8.5px; }
   .win-table { margin-top: 9px; }
-  .win-row {
-    display: grid;
-    grid-template-columns: 13px 1.35fr .9fr .8fr 32px;
-    gap: 7px;
-    align-items: center;
-    padding: 10px 5px;
-    border-bottom: 1px solid rgba(255,255,255,.055);
-    font-size: 9px;
-    color: #dbe2ea;
-  }
-  .win-row .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .win-row { display: grid; grid-template-columns: 13px 1.35fr .9fr .8fr 34px; gap: 7px; align-items: center; padding: 10px 5px; border-bottom: 1px solid rgba(255,243,223,.06); font-size: 9px; color: #f0e2cf; }
+  .win-row .light-dot { width: 7px; height: 7px; }
   .win-row .nm { font-weight: 600; }
-  .win-row .st { color: #8290a3; font-size: 8px; }
-  .win-row .dt { color: #aeb9c8; text-align: right; }
-  .win-row .dt.late { color: #ff9a82; }
-  .win-row .actions { color: #5e6c80; text-align: right; font-size: 10px; }
-  .win-metric {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 12px; padding: 10px 12px;
-    border-radius: 8px;
-    background: rgba(200,241,105,.06);
-    border: 1px solid rgba(200,241,105,.11);
-  }
-  .win-metric span { font-size: 8px; text-transform: uppercase; letter-spacing: .09em; color: #8fa07e; }
-  .win-metric b { font-size: 17px; color: var(--lime); letter-spacing: -.03em; }
-  .demo-callouts { display: flex; flex-direction: column; gap: 9px; }
-  .demo-foot {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 22px;
-    padding-top: 14px;
-    border-top: 1px solid var(--line);
-    font-size: 10px;
-    color: var(--muted);
-  }
-  .demo-foot .df-label {
-    font-size: 8px; font-weight: 800; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--accent);
-    margin-right: 4px;
-  }
-  .demo-foot b { color: var(--fg); font-weight: 650; }
-  .demo-foot i { color: var(--accent); font-style: normal; opacity: .8; }
-  .callout {
-    padding: 12px 14px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: rgba(255,255,255,.025);
-  }
-  .callout .k {
-    font-size: 8.5px; font-weight: 800; letter-spacing: .13em;
-    text-transform: uppercase; color: var(--accent);
-  }
+  .win-row .st { color: #a18668; font-size: 8px; }
+  .win-row .dt { color: #d5c0a6; text-align: right; }
+  .win-row .dt.late { color: #ff9d84; }
+  .win-row .actions { color: #8a7357; text-align: right; font-size: 10px; }
+  .win-metric { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: rgba(255,122,47,.09); border: 1px solid rgba(255,122,47,.18); }
+  .win-metric span { font-size: 8px; text-transform: uppercase; letter-spacing: .09em; color: #d8a67e; }
+  .win-metric b { font-size: 17px; color: var(--orange); letter-spacing: -.03em; }
+  .callouts { display: flex; flex-direction: column; gap: 9px; }
+  .callout { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,243,223,.04); }
+  .callout .k { font-size: 8.5px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); }
   .callout p { margin-top: 4px; font-size: 11.5px; line-height: 1.4; color: var(--muted); }
+  .demo-foot { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 10px; color: var(--muted); }
+  .demo-foot .df-label { font-size: 8px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-right: 4px; }
+  .demo-foot b { color: var(--fg); font-weight: 650; }
+  .demo-foot i { color: var(--accent); font-style: normal; opacity: .85; }
 
-  /* ---------- how it works ---------- */
-  .pipeline {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 13px;
-    margin-top: 30px;
-  }
-  .pipe-card {
-    position: relative;
-    padding: 20px 20px 18px;
-    border-radius: 18px;
-    border: 1px solid var(--line);
-    background: rgba(255,255,255,.5);
-    min-height: 220px;
-  }
+  /* pipeline */
+  .pipe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-top: 28px; }
+  .pipe-card { position: relative; padding: 20px 20px 18px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,243,223,.5); min-height: 218px; }
   .pipe-top { display: flex; align-items: center; justify-content: space-between; }
-  .pipe-card .num {
-    font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
-    color: var(--accent); font-weight: 800;
-  }
-  .pipe-card .chip {
-    padding: 4px 7px; border-radius: 999px;
-    font-size: 8px; font-weight: 700; letter-spacing: .04em;
-    border: 1px solid var(--line); color: var(--muted);
-  }
-  .pipe-card h3 { font-size: 20px; margin-top: 20px; letter-spacing: -.03em; }
+  .pipe-card .num { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+  .pipe-card .chip { padding: 4px 8px; border-radius: 999px; font-size: 8px; font-weight: 700; letter-spacing: .04em; border: 1px solid var(--line); color: var(--muted); }
+  .pipe-card h3 { font-size: 20px; margin-top: 18px; letter-spacing: -.03em; }
   .pipe-card p { font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-top: 8px; }
-  .pipe-card .who {
-    position: absolute; bottom: 18px; left: 20px;
-    font-size: 8.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--fg); opacity: .72;
-  }
-  .stack {
-    display: flex; align-items: center; flex-wrap: wrap; gap: 7px;
-    margin-top: 24px;
-  }
-  .stack .label {
-    font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--muted); margin-right: 4px;
-  }
-  .stack span:not(.label) {
-    padding: 7px 10px; border-radius: 999px;
-    background: var(--ink); color: var(--cream);
-    font-size: 9.5px; font-weight: 650; letter-spacing: .02em;
-  }
-  .dataflow {
-    display: grid;
-    grid-template-columns: 1fr 24px 1fr 24px 1fr 24px 1fr 24px 1fr;
-    align-items: center;
-    gap: 7px;
-    margin-top: 18px;
-    padding: 13px 16px;
-    border-radius: 13px;
-    background: rgba(11,18,32,.055);
-    border: 1px solid var(--line);
-  }
-  .dataflow .df-item {
-    display: flex; flex-direction: column; gap: 3px;
-    padding: 2px 4px;
-  }
-  .dataflow .df-item span {
-    font-size: 7.5px; font-weight: 750; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .dataflow .df-item b {
-    font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 10px; font-weight: 600; color: var(--fg);
-    letter-spacing: -.01em;
-  }
-  .dataflow i {
-    font-style: normal; text-align: center;
-    color: var(--accent); font-size: 13px;
-  }
-  .arch-note {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 16px;
-    padding: 12px 15px;
-    border-left: 2px solid var(--accent);
-    background: rgba(228,91,61,.07);
-    font-size: 11px;
-    line-height: 1.45;
-    color: var(--muted);
-  }
-  .arch-note b { color: var(--fg); }
+  .pipe-card .who { position: absolute; bottom: 18px; left: 20px; font-size: 8.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--fg); opacity: .75; }
+  .dataflow { display: grid; grid-template-columns: 1fr 22px 1fr 22px 1fr 22px 1fr 22px 1fr; align-items: center; gap: 6px; margin-top: 16px; padding: 12px 16px; border-radius: 13px; background: rgba(43,22,8,.06); border: 1px solid var(--line); }
+  .df-item { display: flex; flex-direction: column; gap: 3px; padding: 2px 4px; }
+  .df-item span { font-size: 7.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .df-item b { font-family: "SFMono-Regular", Consolas, monospace; font-size: 10px; font-weight: 600; color: var(--fg); letter-spacing: -.01em; }
+  .dataflow i { font-style: normal; text-align: center; color: var(--accent); font-size: 13px; }
 
-  /* ---------- local ---------- */
-  .local-grid {
-    display: grid;
-    grid-template-columns: 1.15fr .85fr;
-    gap: 52px;
-    align-items: center;
-    margin-top: 24px;
-  }
-  .local-list { display: flex; flex-direction: column; gap: 11px; margin-top: 26px; }
-  .local-item {
-    display: grid;
-    grid-template-columns: 34px 1fr;
-    gap: 13px;
-    align-items: start;
-    padding: 11px 0;
-    border-bottom: 1px solid var(--line);
-  }
+  /* expiry sources */
+  .src-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin-top: 28px; }
+  .src-card { padding: 20px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,243,223,.05); min-height: 190px; }
+  .src-card .tag-src { display: inline-flex; align-items: center; gap: 7px; font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .src-card .tag-src i { width: 7px; height: 7px; border-radius: 2px; background: var(--accent); }
+  .src-card h3 { font-size: 19px; margin-top: 14px; letter-spacing: -.03em; }
+  .src-card p { font-size: 12.5px; line-height: 1.5; color: var(--muted); margin-top: 8px; }
+  .src-card .ex { margin-top: 14px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; color: var(--fg); opacity: .85; }
+  .ex-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+  .example { padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,243,223,.05); }
+  .ex-k { font-size: 7.5px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); }
+  .example code { display: block; margin-top: 6px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; letter-spacing: -.02em; color: var(--fg); }
+  .example .ex-r { margin-top: 3px; font-size: 10px; color: var(--muted); }
+
+  /* barcode */
+  .bc-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 44px; align-items: center; margin-top: 24px; }
+  .bc-flow { display: flex; flex-direction: column; gap: 10px; }
+  .bc-step { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: center; padding: 13px 16px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,243,223,.5); }
+  .bc-step .bci { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: var(--brown); color: var(--orange); font-size: 16px; }
+  .bc-step h4 { font-size: 14px; letter-spacing: -.01em; }
+  .bc-step p { font-size: 11.5px; line-height: 1.4; color: var(--muted); margin-top: 2px; }
+  .bc-note { margin-top: 14px; padding: 12px 15px; border-left: 2px solid var(--accent); background: var(--accent-soft); font-size: 11px; line-height: 1.45; color: var(--muted); }
+  .bc-note b { color: var(--fg); }
+  .barcode-strip { display: flex; align-items: center; gap: 22px; margin-top: 24px; padding: 16px 22px; border: 1px solid var(--line); border-radius: 14px; background: rgba(43,22,8,.05); }
+  .barcode-strip .bars { width: 320px; height: 52px; flex: 0 0 auto; background: repeating-linear-gradient(90deg, var(--brown) 0 2px, transparent 2px 5px, var(--brown) 5px 8px, transparent 8px 12px, var(--brown) 12px 16px, transparent 16px 19px); }
+  .barcode-strip .bc-caption { font-size: 11px; line-height: 1.5; color: var(--muted); }
+  .barcode-strip .bc-caption b { display: block; font-size: 12px; color: var(--fg); letter-spacing: -.01em; }
+
+  /* local */
+  .local-grid { display: grid; grid-template-columns: 1.12fr .88fr; gap: 48px; align-items: center; margin-top: 20px; }
+  .local-list { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+  .local-item { display: grid; grid-template-columns: 34px 1fr; gap: 13px; align-items: start; padding: 11px 0; border-bottom: 1px solid var(--line); }
   .local-item:last-child { border-bottom: 0; }
-  .local-item .li {
-    width: 31px; height: 31px; border-radius: 9px;
-    display: grid; place-items: center;
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-size: 14px;
-    border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
-  }
+  .local-item .li { width: 31px; height: 31px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 14px; border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
   .local-item h3 { font-size: 14px; letter-spacing: -.01em; }
   .local-item p { margin-top: 3px; font-size: 11.5px; line-height: 1.42; color: var(--muted); }
-  .local-visual {
-    position: relative;
-    height: 360px;
-    display: grid;
-    place-items: center;
-  }
-  .local-ring {
-    width: 292px; height: 292px;
-    border-radius: 50%;
-    border: 1px dashed color-mix(in srgb, var(--accent) 42%, transparent);
-    display: grid; place-items: center;
-    position: relative;
-  }
-  .local-ring::before {
-    content: "";
-    position: absolute; inset: 22px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,.07);
-  }
-  .local-core {
-    width: 190px; height: 190px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 38% 30%, #203450, #0d1727 65%);
-    border: 1px solid rgba(255,255,255,.13);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center;
-    box-shadow: 0 0 60px rgba(200,241,105,.10);
-  }
-  .local-core .lock { font-size: 30px; margin-bottom: 7px; }
-  .local-core b { font-size: 24px; letter-spacing: -.04em; color: var(--lime); }
-  .local-core span { font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: #8f9eb1; margin-top: 5px; }
-  .orbit-label {
-    position: absolute;
-    padding: 7px 10px;
-    border-radius: 999px;
-    background: #0b1220;
-    border: 1px solid var(--line);
-    color: #b9c3d1;
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-  .orbit-one { top: 6px; right: 18px; }
-  .orbit-two { bottom: 9px; left: 2px; }
-  .orbit-three { bottom: 56px; right: -8px; background: var(--coral); color: #2b0c06; border: 0; }
-  .local-foot {
-    margin-top: 18px;
-    font-size: 10px;
-    line-height: 1.45;
-    color: var(--muted);
-    max-width: 720px;
-  }
+  .local-visual { position: relative; height: 356px; }
+  .ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 286px; height: 286px; border-radius: 50%; border: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent); }
+  .ring::before { content: ""; position: absolute; inset: 22px; border-radius: 50%; border: 1px solid rgba(255,243,223,.08); }
+  .local-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 184px; height: 184px; border-radius: 50%; background: radial-gradient(circle at 38% 30%, #33200f, #150c05 66%); border: 1px solid rgba(255,243,223,.14); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 0 60px rgba(255,122,47,.14); }
+  .local-core img { height: 62px; width: auto; }
+  .local-core b { font-size: 20px; letter-spacing: -.04em; color: var(--orange); margin-top: 6px; }
+  .local-core span { font-size: 7.5px; letter-spacing: .14em; text-transform: uppercase; color: #b1997d; margin-top: 4px; }
+  .orbit-label { position: absolute; padding: 7px 11px; border-radius: 999px; background: #100801; border: 1px solid var(--line); color: #d8c3a6; font-size: 8px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .orbit-one { top: 6px; right: 16px; }
+  .orbit-two { bottom: 12px; left: 66px; }
+  .orbit-three { bottom: 54px; right: -10px; background: var(--orange); color: var(--brown); border: 0; }
 
-  /* ---------- principles ---------- */
-  .principles {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    margin-top: 28px;
-  }
-  .principle {
-    display: grid;
-    grid-template-columns: 46px 1fr;
-    gap: 15px;
-    padding: 17px 18px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    background: rgba(255,255,255,.46);
-  }
-  .principle .pn {
-    font-family: "Inter Display", Inter, sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--accent);
-    padding-top: 3px;
-  }
+  /* engineering */
+  .eng-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; margin-top: 26px; }
+  .principle { display: grid; grid-template-columns: 42px 1fr; gap: 14px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255,243,223,.48); }
+  .principle .pn { font-size: 12px; font-weight: 800; color: var(--accent); padding-top: 3px; }
   .principle h3 { font-size: 15px; letter-spacing: -.015em; }
   .principle p { font-size: 11.5px; line-height: 1.45; color: var(--muted); margin-top: 4px; }
-  .disclaimer {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 18px;
-    padding: 11px 15px;
-    border-radius: 10px;
-    background: rgba(228,91,61,.08);
-    border: 1px solid rgba(228,91,61,.2);
-    font-size: 10px;
-    line-height: 1.4;
-    color: #7c3b2d;
-  }
-  .disclaimer b { color: var(--accent); }
-  .examples {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 19px;
-  }
-  .example {
-    padding: 12px 14px;
-    border-radius: 12px;
-    border: 1px solid var(--line);
-    background: rgba(255,255,255,.34);
-  }
-  .example .ex-k {
-    font-size: 7.5px; font-weight: 800; letter-spacing: .13em;
-    text-transform: uppercase; color: var(--accent);
-  }
-  .example code {
-    display: block;
-    margin-top: 6px;
-    font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 11px;
-    letter-spacing: -.02em;
-    color: var(--fg);
-  }
-  .example .ex-r {
-    margin-top: 3px;
-    font-size: 10px;
-    color: var(--muted);
-  }
+  .verify { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; margin-top: 18px; }
+  .verify .v { padding: 13px 15px; border-radius: 13px; background: var(--brown); color: var(--cream); }
+  .verify .v span { font-size: 8px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; color: var(--orange); }
+  .verify .v b { display: block; font-size: 13px; margin-top: 5px; letter-spacing: -.01em; }
 
-  /* ---------- status ---------- */
-  .status-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 34px;
-    margin-top: 26px;
-  }
-  .status-col h3 {
-    font-size: 10px; font-weight: 800; letter-spacing: .16em;
-    text-transform: uppercase; color: var(--accent);
-    margin-bottom: 12px;
-  }
-  .check-list { display: flex; flex-direction: column; gap: 0; }
-  .check {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 11px 0;
-    border-bottom: 1px solid var(--line);
-    font-size: 11.5px;
-    line-height: 1.35;
-    color: #ccd4df;
-  }
+  /* status */
+  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-top: 24px; }
+  .status-col h3 { font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .check-list { display: flex; flex-direction: column; }
+  .check { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 11.5px; line-height: 1.35; color: var(--fg); }
   .check:last-child { border-bottom: 0; }
-  .check .yes {
-    width: 17px; height: 17px; flex: 0 0 auto;
-    border-radius: 50%;
-    display: grid; place-items: center;
-    background: rgba(200,241,105,.12);
-    color: var(--lime);
-    font-size: 9px;
-    margin-top: -1px;
-  }
-  .phase {
-    display: grid;
-    grid-template-columns: 46px 1fr;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .phase:last-child { border-bottom: 0; }
-  .phase .when {
-    font-size: 8px; font-weight: 800; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--accent);
-    padding-top: 3px;
-  }
-  .phase h4 { margin: 0; font-size: 12px; letter-spacing: -.005em; color: var(--fg); }
-  .phase p { margin-top: 2px; font-size: 10.5px; line-height: 1.4; color: var(--muted); }
-  .status-tag {
-    display: inline-flex; align-items: center; gap: 7px;
-    margin-top: 18px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1px solid rgba(200,241,105,.2);
-    background: rgba(200,241,105,.07);
-    font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--lime);
-  }
-  .status-tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--lime); }
-  .demo-script {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 22px;
-    padding: 14px 17px;
-    border-radius: 12px;
-    border: 1px solid var(--line);
-    background: rgba(255,255,255,.025);
-    font-size: 10px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .demo-script .ds-label {
-    font-size: 8px; font-weight: 800; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--accent);
-    margin-right: 2px;
-  }
-  .demo-script b { color: var(--fg); font-weight: 650; }
-  .demo-script i { color: var(--accent); font-style: normal; opacity: .8; }
+  .check .yes { width: 17px; height: 17px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; background: rgba(61,186,120,.16); color: var(--green); font-size: 9px; margin-top: -1px; }
+  .check .no { width: 17px; height: 17px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; background: rgba(255,122,47,.14); color: var(--orange); font-size: 11px; margin-top: -2px; }
+  .status-tag { display: inline-flex; align-items: center; gap: 7px; margin-top: 20px; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(61,186,120,.28); background: rgba(61,186,120,.1); font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--green); }
+  .status-tag i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
 
-  /* ---------- impact ---------- */
-  .impact-head { max-width: 920px; }
-  .impact-head h2 { font-size: 46px; }
-  .impact-head h2 .serif {
-    font-family: "EB Garamond", Georgia, serif;
-    font-style: italic;
-    font-weight: 500;
-    letter-spacing: -.02em;
-  }
-  .metrics {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 11px;
-    margin-top: 32px;
-  }
-  .metric {
-    padding: 20px 16px;
-    border-radius: 16px;
-    background: var(--ink);
-    color: var(--cream);
-    min-height: 174px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .metric .mv { font-size: 32px; line-height: 1; letter-spacing: -.055em; font-weight: 700; color: var(--lime); }
-  .metric .ml { font-size: 10px; line-height: 1.4; color: #a8b3c2; }
-  .measure {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 34px;
-    margin-top: 22px;
-    padding-top: 17px;
-    border-top: 1px solid var(--line);
-  }
-  .measure h4 {
-    margin: 0 0 7px;
-    font-size: 9px; font-weight: 800; letter-spacing: .15em;
-    text-transform: uppercase; color: var(--accent);
-  }
-  .measure p { font-size: 12px; line-height: 1.5; color: var(--muted); }
-  .measure b { color: var(--fg); }
-  .experiment {
-    display: grid;
-    grid-template-columns: 1.25fr 1fr 1fr 1fr;
-    gap: 10px;
-    align-items: stretch;
-    margin-top: 20px;
-    padding: 14px 16px;
-    border-radius: 14px;
-    background: var(--ink);
-    color: var(--cream);
-  }
-  .experiment .ex-label {
-    display: flex; align-items: center;
-    font-size: 8px; font-weight: 800; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--lime);
-  }
-  .experiment .ex-step {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 10px; line-height: 1.3; color: #aab5c4;
-    border-left: 1px solid rgba(255,255,255,.12);
-    padding-left: 12px;
-  }
-  .experiment .ex-step b {
-    font-size: 17px; letter-spacing: -.04em; color: var(--lime);
-  }
-
-  /* ---------- closing ---------- */
-  .closing { padding: 66px 78px 54px; }
-  .closing .eyebrow { color: rgba(11,18,32,.55); }
-  .closing .eyebrow .tick { background: var(--accent); }
-  .closing h2 {
-    font-size: 112px;
-    line-height: .88;
-    letter-spacing: -.07em;
-    max-width: 1000px;
-    margin-top: 30px;
-    color: var(--ink);
-  }
-  .closing h2 .serif {
-    font-family: "EB Garamond", Georgia, serif;
-    font-style: italic;
-    font-weight: 500;
-    letter-spacing: -.03em;
-  }
-  .closing .close-sub {
-    margin-top: 24px;
-    max-width: 620px;
-    font-size: 18px;
-    line-height: 1.5;
-    color: #3f4a1b;
-  }
-  .closing .close-sub b { color: var(--ink); }
-  .repo {
-    display: inline-flex;
-    align-items: center;
-    gap: 11px;
-    margin-top: 27px;
-    padding: 13px 17px;
-    border-radius: 12px;
-    background: var(--ink);
-    color: var(--cream);
-    font-size: 11px;
-    font-weight: 650;
-    letter-spacing: .02em;
-    text-decoration: none;
-  }
-  .repo .gh {
-    width: 20px; height: 20px; border-radius: 50%;
-    display: grid; place-items: center;
-    background: var(--lime); color: var(--ink);
-    font-size: 10px; font-weight: 900;
-  }
-  .closing-foot {
-    position: absolute; right: 78px; bottom: 38px;
-    text-align: right;
-    font-size: 9px; line-height: 1.5;
-    letter-spacing: .13em; text-transform: uppercase;
-    color: #4c5a21;
-  }
-  .closing-foot b { display: block; font-size: 11px; color: var(--ink); }
-  .closing-mark {
-    position: absolute;
-    right: 75px; top: 55px;
-    width: 190px; height: 190px;
-    border-radius: 50%;
-    border: 1px dashed rgba(11,18,32,.28);
-    display: flex; flex-direction: column; gap: 8px;
-    align-items: center; justify-content: center;
-  }
-  .closing-mark::before {
-    content: "";
-    position: absolute; inset: 17px; border-radius: 50%;
-    border: 1px solid rgba(11,18,32,.12);
-  }
-  .closing-mark .brand-mark { height: 76px; }
-  .closing-mark span {
-    font-family: "EB Garamond", Georgia, serif;
-    font-style: italic;
-    font-size: 34px;
-    letter-spacing: -.04em;
-    color: rgba(11,18,32,.75);
-    transform: rotate(-8deg);
-  }
+  /* impact / closing */
+  .impact-head h2 { font-size: 58px; }
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 34px; }
+  .metric { padding: 20px 22px; border-radius: 18px; border: 1px solid var(--line); background: rgba(255,243,223,.5); }
+  .metric .mv { font-size: 40px; font-weight: 800; letter-spacing: -.05em; color: var(--accent); }
+  .metric .ml { font-size: 12px; line-height: 1.4; color: var(--muted); margin-top: 8px; }
+  .closing-inner { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+  .closing-copy { max-width: 760px; }
+  .closing-copy h2 { font-size: 74px; line-height: .96; margin-top: 18px; letter-spacing: -.055em; }
+  .closing-copy h2 .serif { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 500; }
+  .closing-copy .sub { color: var(--muted); max-width: 620px; }
+  .gh { display: inline-flex; align-items: center; gap: 10px; margin-top: 26px; padding: 12px 18px; border-radius: 999px; background: var(--brown); color: var(--cream); font-size: 13px; font-weight: 650; text-decoration: none; width: fit-content; }
+  .gh .gh-arrow { color: var(--orange); }
+  .closing-mark { position: absolute; right: 78px; top: 62px; width: 180px; height: 180px; border-radius: 50%; border: 1px dashed rgba(43,22,8,.35); display: flex; flex-direction: column; gap: 6px; align-items: center; justify-content: center; }
+  .closing-mark::before { content: ""; position: absolute; inset: 16px; border-radius: 50%; border: 1px solid rgba(43,22,8,.16); }
+  .closing-mark img { height: 74px; width: auto; }
+  .closing-foot { position: absolute; right: 78px; bottom: 66px; text-align: right; font-size: 9px; line-height: 1.5; letter-spacing: .13em; text-transform: uppercase; color: rgba(43,22,8,.7); }
+  .closing-foot b { display: block; font-size: 11px; color: var(--brown); }
 
   /* ---------- UI ---------- */
-  .ui {
-    position: fixed;
-    z-index: 50;
-    color: #d9e0e9;
-    font-size: 10px;
-    letter-spacing: .05em;
-  }
-  .progress {
-    top: 0; left: 0; right: 0; height: 3px;
-    background: rgba(255,255,255,.06);
-  }
-  .progress span {
-    display: block; height: 100%; width: 0;
-    background: var(--lime);
-    transition: width .35s ease;
-  }
-  .nav {
-    right: 22px; bottom: 18px;
-    display: flex; align-items: center; gap: 7px;
-    padding: 6px;
-    border-radius: 999px;
-    background: rgba(9,14,24,.82);
-    border: 1px solid rgba(255,255,255,.12);
-    backdrop-filter: blur(12px);
-    opacity: .72;
-    transition: opacity .2s;
-  }
-  .nav:hover { opacity: 1; }
-  .nav button {
-    width: 27px; height: 27px;
-    border: 0; border-radius: 50%;
-    background: transparent; color: #d9e0e9;
-    cursor: pointer; font-size: 14px;
-  }
-  .nav button:hover { background: rgba(255,255,255,.1); }
-  .nav .count { min-width: 42px; text-align: center; font-variant-numeric: tabular-nums; color: #9aa7b8; }
-  .hint {
-    left: 22px; bottom: 22px;
-    color: #5f6c7e;
-    font-size: 9px;
-    letter-spacing: .07em;
-  }
-  .notes-panel {
-    position: fixed;
-    z-index: 60;
-    left: 50%; bottom: 16px;
-    transform: translateX(-50%) translateY(18px);
-    width: min(920px, calc(100vw - 40px));
-    max-height: 230px;
-    overflow: auto;
-    padding: 18px 22px;
-    border-radius: 14px;
-    background: rgba(9,14,24,.96);
-    border: 1px solid rgba(255,255,255,.14);
-    box-shadow: 0 20px 70px rgba(0,0,0,.5);
-    color: #c9d2de;
-    font-size: 12px;
-    line-height: 1.55;
-    opacity: 0;
-    pointer-events: none;
-    transition: .2s ease;
-  }
+  .ui { position: fixed; z-index: 50; color: #e8d6bf; font-size: 10px; letter-spacing: .05em; }
+  .progress { top: 0; left: 0; right: 0; height: 3px; background: rgba(255,243,223,.07); }
+  .progress span { display: block; height: 100%; width: 0; background: var(--orange); transition: width .28s ease; }
+  .hint { bottom: 12px; left: 50%; transform: translateX(-50%); opacity: .55; }
+  .nav { bottom: 14px; right: 16px; display: flex; align-items: center; gap: 8px; }
+  .nav button { width: 30px; height: 30px; border-radius: 9px; border: 1px solid rgba(255,243,223,.16); background: rgba(20,11,5,.75); color: #e8d6bf; cursor: pointer; line-height: 1; }
+  .nav button:hover { border-color: var(--orange); color: var(--orange); }
+  .nav .count { font-variant-numeric: tabular-nums; opacity: .7; }
+  .notes-panel { position: fixed; z-index: 60; left: 50%; bottom: 56px; transform: translateX(-50%) translateY(10px); width: min(920px, 92vw); max-height: 42vh; overflow: auto; padding: 16px 20px; border-radius: 14px; background: rgba(16,8,1,.97); border: 1px solid rgba(255,243,223,.16); box-shadow: 0 20px 70px rgba(0,0,0,.55); color: #e0cdb4; font-size: 12px; line-height: 1.55; opacity: 0; pointer-events: none; transition: .2s ease; }
   .notes-panel.open { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
-  .notes-panel b { color: var(--lime); }
-  .notes-panel .nt {
-    display: block; margin-bottom: 7px;
-    font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--lime);
-  }
+  .notes-panel b { color: var(--orange); }
+  .notes-panel .nt { display: block; margin-bottom: 7px; font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); }
   .notes { display: none; }
 
-  @media (max-width: 900px) {
-    .hint { display: none; }
-  }
+  @media (max-width: 900px) { .hint { display: none; } }
 
   @media print {
     @page { size: 13.333333in 7.5in; margin: 0; }
-    html, body {
-      width: 1280px; height: auto;
-      overflow: visible;
-      background: var(--ink);
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-    .deck-viewport {
-      position: static;
-      display: block;
-      background: none;
-    }
-    .stage {
-      width: 1280px;
-      height: auto;
-      transform: none !important;
-    }
-    .slide {
-      display: block !important;
-      position: relative;
-      width: 1280px;
-      height: 720px;
-      page-break-after: always;
-      break-after: page;
-      animation: none !important;
-    }
+    html, body { width: 1280px; height: auto; overflow: visible; background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .deck-viewport { position: static; display: block; background: none; }
+    .stage { width: 1280px; height: auto; transform: none !important; }
+    .slide { display: block !important; position: relative; width: 1280px; height: 720px; page-break-after: always; break-after: page; animation: none !important; }
     .slide:last-of-type { page-break-after: auto; break-after: auto; }
-    .anim, .float {
-      animation: none !important;
-      opacity: 1 !important;
-      transform: none !important;
-    }
+    .anim, .float { animation: none !important; opacity: 1 !important; transform: none !important; }
     .ui, .notes, .notes-panel { display: none !important; }
   }
 </style>
@@ -1279,11 +420,15 @@
       <div class="orb orb-b"></div>
       <div class="cover-grid">
         <div class="cover-copy">
-          <div class="eyebrow anim"><span class="tick"></span> Hacktoberfest Milan <strong>· 2026</strong></div>
-          <h1 class="anim" style="--d:.06s">Il frigo che<br>ti <span class="serif">avvisa</span><br>prima.</h1>
-          <p class="lede anim" style="--d:.12s">Trasforma scontrini, foto ed etichette in un inventario intelligente. <strong>Meno cibo dimenticato, meno spesa buttata.</strong></p>
-          <div class="cover-tags anim" style="--d:.18s">
-            <span class="tag"><span class="dot"></span> Gemma 4 · locale</span>
+          <div class="brand-lockup anim">
+            <img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt="">
+            <span class="wordmark">fuorisaver</span>
+          </div>
+          <div class="eyebrow anim" style="--d:.05s"><span class="tick"></span> Hacktoberfest Milan <strong>· 2026</strong></div>
+          <h1 class="anim" style="--d:.1s">Il salvatore<br>del <span class="serif">fuorisede</span>.</h1>
+          <p class="lede anim" style="--d:.16s">Fotografi quello che compri, fuorisaver capisce cos'è, stima la scadenza e ti avvisa <strong>prima che butti via soldi e cibo</strong>. Tutto in locale.</p>
+          <div class="cover-tags anim" style="--d:.22s">
+            <span class="tag"><span class="dot"></span> Gemma 4 · Ollama</span>
             <span class="tag">Streamlit</span>
             <span class="tag">SQLite</span>
             <span class="tag">Open source</span>
@@ -1293,27 +438,27 @@
           <div class="glow"></div>
           <div class="app-card float">
             <div class="mini-head">
-              <span class="mini-brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Il mio frigo</span>
-              <span class="badge">3 in scadenza</span>
+              <span class="mini-brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt="">Il mio frigo</span>
+              <span class="badge">2 in scadenza</span>
             </div>
             <div class="mini-rows">
               <div class="mini-row">
-                <span class="light red"></span>
+                <span class="light-dot red"></span>
                 <div><div class="mini-name">Yogurt greco</div><div class="mini-meta">latticini · chiuso · ×2</div></div>
                 <div class="mini-when late">oggi</div>
               </div>
               <div class="mini-row">
-                <span class="light yellow"></span>
+                <span class="light-dot yellow"></span>
                 <div><div class="mini-name">Insalata</div><div class="mini-meta">verdura · aperto · ×1</div></div>
                 <div class="mini-when">tra 3 g</div>
               </div>
               <div class="mini-row">
-                <span class="light green"></span>
+                <span class="light-dot green"></span>
                 <div><div class="mini-name">Parmigiano</div><div class="mini-meta">stagionato · chiuso · ×1</div></div>
                 <div class="mini-when">tra 24 g</div>
               </div>
               <div class="mini-row">
-                <span class="light green"></span>
+                <span class="light-dot green"></span>
                 <div><div class="mini-name">Uova</div><div class="mini-meta">uova · chiuso · ×6</div></div>
                 <div class="mini-when">tra 18 g</div>
               </div>
@@ -1328,10 +473,10 @@
           <div class="sticker sticker-three">circa 3 giorni</div>
         </div>
       </div>
-      <div class="cover-foot"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo · prototipo locale per ridurre lo spreco alimentare</div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
-    <!-- 02 · PROBLEM -->
+    <!-- 02 · PROBLEMA -->
     <section class="slide light" data-title="Il problema">
       <div class="eyebrow anim"><span class="tick"></span> 01 — Il problema</div>
       <h2 class="anim" style="--d:.05s">Non è il cibo che dimentichiamo.<br>È <span class="mark">il momento in cui scade.</span></h2>
@@ -1339,364 +484,340 @@
         <div class="stat-box anim" style="--d:.1s">
           <div>
             <div class="huge-stat">1/3</div>
-            <p class="stat-copy" style="margin-top:16px">del cibo prodotto nel mondo non arriva mai nel piatto.</p>
+            <p class="stat-copy">del cibo prodotto nel mondo non arriva mai nel piatto. La maggior parte dello spreco avviene in casa.</p>
           </div>
-          <span class="source">FAO · Food wastage footprint</span>
+          <span class="source">FAO · UNEP Food Waste Index 2024</span>
         </div>
         <div class="reason-list">
-          <div class="reason anim" style="--d:.15s">
+          <div class="reason anim" style="--d:.14s">
             <div class="n">01</div>
-            <div><h3>Comprare è facile.</h3><p>Offerte, scorte e spesa settimanale riempiono il frigo. Non la memoria.</p></div>
+            <div><h3>Comprare è facile.</h3><p>Offerte e spesa settimanale riempiono il frigo. Non la memoria.</p></div>
           </div>
           <div class="reason anim" style="--d:.2s">
             <div class="n">02</div>
-            <div><h3>Dimenticare è silenzioso.</h3><p>La zucchina non manda notifiche dal fondo del cassetto.</p></div>
+            <div><h3>Dimenticare è silenzioso.</h3><p>Fuori sede si cucina per sé, a orari strani. La zucchina non manda notifiche dal fondo del cassetto.</p></div>
           </div>
-          <div class="reason anim" style="--d:.25s">
+          <div class="reason anim" style="--d:.26s">
             <div class="n">03</div>
-            <div><h3>Buttare è la conseguenza.</h3><p>Cibo, soldi, tempo e risorse finiscono nello stesso sacco.</p></div>
+            <div><h3>Buttare è la conseguenza.</h3><p>Cibo, soldi e tempo finiscono nello stesso sacco. Le app di inventario chiedono di compilare tutto a mano: per questo non le usa nessuno.</p></div>
           </div>
         </div>
       </div>
-      <div class="bottom-note anim" style="--d:.3s"><b>Il 60% dello spreco alimentare avviene nelle case.</b> Fonte: UNEP Food Waste Index 2024.</div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>02</b> / 11</span></div>
+      <div class="bottom-note anim" style="--d:.32s">Il dato che manca non è la voglia: <b>è il "quando scade".</b></div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
-    <!-- 03 · INSIGHT -->
+    <!-- 03 · INTUIZIONE -->
     <section class="slide" data-title="L'intuizione">
       <div class="eyebrow anim"><span class="tick"></span> 02 — L'intuizione</div>
-      <h2 class="anim" style="--d:.05s">Lo scontrino sa cosa hai comprato.<br><span class="mark">Non sa quando scade.</span></h2>
+      <h2 class="anim" style="--d:.05s">Il dato c'è già.<br>Basta <span class="mark">leggerlo.</span></h2>
       <div class="flow">
         <div class="flow-card anim" style="--d:.1s">
           <div class="flow-icon">🧾</div>
-          <div class="k">Il dato che c'è</div>
-          <h3>Lo scontrino</h3>
-          <p>Nome, quantità, prezzo e data d'acquisto. Tutto già scritto, niente da digitare.</p>
+          <div class="k">Lo scontrino</div>
+          <h3>Cosa hai comprato</h3>
+          <p>Nomi, quantità, prezzi e data d'acquisto. Una foto e le righe diventano prodotti.</p>
         </div>
         <div class="flow-arrow anim" style="--d:.15s">→</div>
-        <div class="flow-card anim" style="--d:.16s">
-          <div class="flow-icon">📅</div>
-          <div class="k">La regola</div>
-          <h3>Shelf-life</h3>
-          <p>Categoria + stato + giorni di conservazione = una stima prudente, spiegabile e correggibile.</p>
-        </div>
-        <div class="flow-arrow anim" style="--d:.21s">→</div>
-        <div class="flow-card anim" style="--d:.22s">
+        <div class="flow-card anim" style="--d:.2s">
           <div class="flow-icon">🏷️</div>
-          <div class="k">Il dato che manca</div>
-          <h3>L'etichetta</h3>
-          <p>Quando c'è una data stampata, vince sulla stima. Una foto la trasforma in un dato verificato.</p>
+          <div class="k">L'etichetta</div>
+          <h3>Quando scade</h3>
+          <p>La data vera, letta dalla confezione. E la differenza tra "da consumare" e "preferibilmente entro".</p>
+        </div>
+        <div class="flow-arrow anim" style="--d:.25s">→</div>
+        <div class="flow-card anim" style="--d:.3s">
+          <div class="flow-icon">📷</div>
+          <div class="k">Il prodotto</div>
+          <h3>Cos'è, in che stato</h3>
+          <p>Nome, categoria e stato: chiuso, aperto, cotto o congelato. Anche il codice a barre.</p>
         </div>
       </div>
-      <div class="insight-line anim" style="--d:.28s">La scadenza è una <b>stima onesta</b> finché una foto non la trasforma in un dato. Meglio “circa 3 giorni” che un campo vuoto.</div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>03</b> / 11</span></div>
+      <div class="insight-line anim" style="--d:.36s">Non ti chiediamo di compilare un database. Ti chiediamo <b>una foto e una conferma.</b></div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
-    <!-- 04 · SOLUTION -->
+    <!-- 04 · SOLUZIONE -->
     <section class="slide light" data-title="La soluzione">
       <div class="eyebrow anim"><span class="tick"></span> 03 — La soluzione</div>
-      <h2 class="anim" style="--d:.05s">Tre foto.<br><span class="mark">Zero data entry.</span></h2>
-      <div class="solution-grid">
-        <div class="solution-card anim" style="--d:.1s">
+      <h2 class="anim" style="--d:.05s">Quattro modi per riempire il frigo.<br><span class="mark">Zero digitazione.</span></h2>
+      <div class="sol-grid">
+        <div class="sol-card anim" style="--d:.1s">
           <div class="big-n">01</div>
-          <div class="ico">🧾</div>
-          <h3>Scontrino</h3>
-          <p>Butta dentro tutto. Frigo espande le abbreviazioni, filtra il non-food e stima le scadenze riga per riga.</p>
-          <div class="micro">Inserimento in blocco</div>
-        </div>
-        <div class="solution-card anim" style="--d:.16s">
-          <div class="big-n">02</div>
           <div class="ico">📷</div>
-          <h3>Prodotto</h3>
-          <p>Una foto al pacco. Gemma riconosce nome, categoria e stato: chiuso, aperto, cotto o congelato.</p>
+          <h3>Foto prodotto</h3>
+          <p>Una foto al pacco. Gemma riconosce nome, categoria e stato. Il codice a barre, se c'è, completa i dettagli.</p>
           <div class="micro">Riconoscimento visivo</div>
         </div>
-        <div class="solution-card anim" style="--d:.22s">
-          <div class="big-n">03</div>
+        <div class="sol-card anim" style="--d:.16s">
+          <div class="big-n">02</div>
           <div class="ico">🏷️</div>
-          <h3>Etichetta</h3>
-          <p>La data stampata batte la stima. L'utente la verifica e la conferma: fonte “label”, non “estimated”.</p>
-          <div class="micro">Data verificata</div>
+          <h3>Foto etichetta</h3>
+          <p>La data di scadenza letta dalla confezione, normalizzata dal codice. Sostituisce la stima con un dato certo.</p>
+          <div class="micro">Scadenza verificata</div>
+        </div>
+        <div class="sol-card anim" style="--d:.22s">
+          <div class="big-n">03</div>
+          <div class="ico">🔢</div>
+          <h3>Codice a barre</h3>
+          <p>EAN dalla foto, validato col checksum, e nome, marca e categoria da Open Food Facts.</p>
+          <div class="micro">Catalogo aperto</div>
+        </div>
+        <div class="sol-card anim" style="--d:.28s">
+          <div class="big-n">04</div>
+          <div class="ico">🧾</div>
+          <h3>Scontrino <small style="font-size:11px">(beta)</small></h3>
+          <p>Una foto e tutta la spesa entra in blocco, con prezzi e scadenze stimate. Le voci non alimentari vengono filtrate.</p>
+          <div class="micro">Inserimento in blocco</div>
         </div>
       </div>
-      <div class="solution-foot anim" style="--d:.28s">
-        <p>Poi il frigo diventa una <b>timeline commestibile</b>: rosso, giallo, verde. E una ricetta per ogni cosa.</p>
+      <div class="sol-foot anim" style="--d:.34s">
+        <p>Il modello propone. <b>Tu confermi</b> — con la confidenza in vista.</p>
         <div class="lights"><span class="r"></span><span class="y"></span><span class="g"></span></div>
       </div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>04</b> / 11</span></div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
     <!-- 05 · DEMO -->
-    <section class="slide" data-title="Demo">
-      <div class="eyebrow anim"><span class="tick"></span> 04 — Demo</div>
-      <h2 class="anim" style="--d:.05s">Il frigo, a colpo d'occhio.</h2>
+    <section class="slide" data-title="L'inventario">
+      <div class="eyebrow anim"><span class="tick"></span> 04 — Come si vede</div>
+      <h2 class="anim" style="--d:.05s">Il frigo, <span class="mark">a colpo d'occhio.</span></h2>
       <div class="demo-grid">
         <div class="window anim" style="--d:.1s">
           <div class="win-side">
-            <div class="win-brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</div>
+            <div class="win-brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt="">fuorisaver</div>
             <div class="win-nav">
-              <div class="on">▦ &nbsp;Inventario</div>
-              <div>＋ &nbsp;Aggiungi</div>
-              <div>✦ &nbsp;Ricette</div>
+              <div class="on">Inventario</div>
+              <div>+ Aggiungi</div>
+              <div>✦ Ricette</div>
             </div>
-            <div class="win-health"><div><i></i> Ollama OK</div></div>
+            <div class="win-health"><div><i></i> Ollama OK · gemma4:e4b</div></div>
           </div>
           <div class="win-main">
             <div class="win-title"><h3>Inventario</h3><span>oggi</span></div>
             <div class="win-alert">In scadenza: Yogurt greco, Insalata</div>
             <div class="win-table">
               <div class="win-row">
-                <span class="dot red"></span><span class="nm">Yogurt greco</span><span class="st">latticini · chiuso</span><span class="dt late">oggi</span><span class="actions">✓ ⌫</span>
+                <span class="light-dot red"></span><span class="nm">Yogurt greco</span><span class="st">latticini · chiuso</span><span class="dt late">oggi</span><span class="actions">✓ ⌫</span>
               </div>
               <div class="win-row">
-                <span class="dot yellow"></span><span class="nm">Insalata</span><span class="st">verdura · aperto</span><span class="dt">tra 3 g</span><span class="actions">✓ ⌫</span>
+                <span class="light-dot yellow"></span><span class="nm">Insalata</span><span class="st">verdura · aperto</span><span class="dt">tra 3 g</span><span class="actions">✓ ⌫</span>
               </div>
               <div class="win-row">
-                <span class="dot green"></span><span class="nm">Parmigiano</span><span class="st">stagionato · chiuso</span><span class="dt">tra 24 g</span><span class="actions">✓ ⌫</span>
+                <span class="light-dot green"></span><span class="nm">Parmigiano</span><span class="st">stagionato · chiuso</span><span class="dt">tra 24 g</span><span class="actions">✓ ⌫</span>
               </div>
               <div class="win-row">
-                <span class="dot green"></span><span class="nm">Uova</span><span class="st">uova · chiuso</span><span class="dt">tra 18 g</span><span class="actions">✓ ⌫</span>
+                <span class="light-dot green"></span><span class="nm">Uova</span><span class="st">uova · chiuso</span><span class="dt">tra 18 g</span><span class="actions">✓ ⌫</span>
+              </div>
+              <div class="win-row">
+                <span class="light-dot yellow"></span><span class="nm">Ricotta</span><span class="st">latticini · aperto</span><span class="dt">tra 4 g</span><span class="actions">✓ ⌫</span>
               </div>
             </div>
             <div class="win-metric"><span>Spreco totale</span><b>12,40 €</b></div>
           </div>
         </div>
-        <div class="demo-callouts">
-          <div class="callout anim" style="--d:.15s"><div class="k">Semaforo</div><p>Rosso ≤ 2 giorni. Giallo ≤ 5. Verde oltre. L'urgenza si vede senza leggere numeri.</p></div>
-          <div class="callout anim" style="--d:.2s"><div class="k">Stima trasparente</div><p>“circa” davanti alle date stimate. La fonte è sempre esplicita: label, manual o estimated.</p></div>
-          <div class="callout anim" style="--d:.25s"><div class="k">Un tap</div><p>Consumato o buttato. Lo spreco diventa una cifra in euro, non un senso di colpa.</p></div>
-          <div class="callout anim" style="--d:.3s"><div class="k">Ricette</div><p>Gemma propone tre piatti usando prima gli ingredienti in scadenza.</p></div>
+        <div class="callouts">
+          <div class="callout anim" style="--d:.18s"><div class="k">Semaforo</div><p>Rosso entro 2 giorni o già scaduto, giallo entro 5, verde oltre.</p></div>
+          <div class="callout anim" style="--d:.24s"><div class="k">Un tap</div><p>Segni <b>consumato</b> ✓ o <b>buttato</b> ⌫, e lo spreco diventa una cifra in euro.</p></div>
+          <div class="callout anim" style="--d:.3s"><div class="k">Ricette</div><p>Propone cosa cucinare partendo da ciò che sta per scadere.</p></div>
+          <div class="callout anim" style="--d:.36s"><div class="k">Avvisi</div><p>Notifiche opzionali via ntfy per i prodotti urgenti.</p></div>
         </div>
       </div>
-      <div class="demo-foot anim" style="--d:.34s">
-        <span class="df-label">Percorso demo</span>
-        <span><b>1</b> Aggiungi</span><i>→</i>
-        <span><b>2</b> Scontrino</span><i>→</i>
-        <span><b>3</b> Correggi</span><i>→</i>
-        <span><b>4</b> Aggiungi tutto</span><i>→</i>
-        <span><b>5</b> Ricette</span>
-      </div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>05</b> / 11</span></div>
+      <div class="demo-foot anim" style="--d:.42s"><span class="df-label">Prototipo</span>Questo schermo <b>gira davvero</b>, non è un mockup. <i>→</i> <b>dati locali, UI Streamlit</b></div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
-    <!-- 06 · HOW IT WORKS -->
-    <section class="slide light" data-title="Come funziona">
-      <div class="eyebrow anim"><span class="tick"></span> 05 — Sotto il cofano</div>
-      <h2 class="anim" style="--d:.05s">Il modello estrae. <span class="mark">Il codice decide.</span></h2>
-      <div class="pipeline">
+    <!-- 06 · ARCHITETTURA -->
+    <section class="slide light" data-title="Architettura">
+      <div class="eyebrow anim"><span class="tick"></span> 05 — Architettura</div>
+      <h2 class="anim" style="--d:.05s">Il modello estrae. Il codice decide.<br><span class="mark">La persona conferma.</span></h2>
+      <div class="pipe-grid">
         <div class="pipe-card anim" style="--d:.1s">
-          <div class="pipe-top"><span class="num">01 · il modello</span><span class="chip">Gemma 4 + Ollama</span></div>
-          <h3>Legge le immagini</h3>
-          <p>Foto prodotto, etichetta o scontrino. Risponde in JSON con schema fissato, temperatura zero e confidenza.</p>
-          <div class="who">Estrae · classifica</div>
+          <div class="pipe-top"><span class="num">01 · Il modello</span><span class="chip">Gemma 4 · Ollama</span></div>
+          <h3>Estrae e classifica</h3>
+          <p>Dalla foto ricava nome, categoria, stato e una confidenza. Non inventa date: se le vede, le copia.</p>
+          <div class="who">Vision multimodale</div>
         </div>
         <div class="pipe-card anim" style="--d:.16s">
-          <div class="pipe-top"><span class="num">02 · le regole</span><span class="chip">Python + YAML</span></div>
-          <h3>Calcola le date</h3>
-          <p>Parser dei formati italiani, tabella shelf-life ispirata a USDA FoodKeeper, fallback conservativo per categorie ignote.</p>
-          <div class="who">Normalizza · stima</div>
+          <div class="pipe-top"><span class="num">02 · Il codice</span><span class="chip">Python</span></div>
+          <h3>Normalizza e calcola</h3>
+          <p>Il parser delle date legge molti formati. La tabella <b>shelf_life.yaml</b> (ispirata a USDA FoodKeeper) stima la durata per categoria e stato.</p>
+          <div class="who">Deterministico</div>
         </div>
         <div class="pipe-card anim" style="--d:.22s">
-          <div class="pipe-top"><span class="num">03 · la persona</span><span class="chip">Conferma</span></div>
-          <h3>Ha l'ultima parola</h3>
-          <p>Ogni inserimento è modificabile e mostra la confidenza. La data dell'etichetta sostituisce la stima.</p>
-          <div class="who">Controlla · corregge</div>
+          <div class="pipe-top"><span class="num">03 · La persona</span><span class="chip">Human in the loop</span></div>
+          <h3>Conferma</h3>
+          <p>Ogni inserimento passa da un form modificabile, con la confidenza del modello in vista. La sicurezza alimentare resta una decisione umana.</p>
+          <div class="who">Sempre nel loop</div>
         </div>
       </div>
-      <div class="stack anim" style="--d:.28s">
-        <span class="label">Stack</span>
-        <span>Streamlit</span><span>Python</span><span>SQLite</span><span>Ollama</span><span>Docker Compose</span><span>pytest</span>
+      <div class="dataflow anim" style="--d:.28s">
+        <div class="df-item"><span>input</span><b>foto</b></div><i>→</i>
+        <div class="df-item"><span>modello</span><b>JSON</b></div><i>→</i>
+        <div class="df-item"><span>date</span><b>dates.parse()</b></div><i>→</i>
+        <div class="df-item"><span>stima</span><b>shelf_life</b></div><i>→</i>
+        <div class="df-item"><span>storage</span><b>Item · SQLite</b></div>
       </div>
-      <div class="dataflow anim" style="--d:.32s">
-        <div class="df-item"><span>input</span><b>foto.jpg</b></div>
-        <i>→</i>
-        <div class="df-item"><span>vision</span><b>JSON schema</b></div>
-        <i>→</i>
-        <div class="df-item"><span>rules</span><b>date + shelf-life</b></div>
-        <i>→</i>
-        <div class="df-item"><span>storage</span><b>SQLite</b></div>
-        <i>→</i>
-        <div class="df-item"><span>output</span><b>inventario</b></div>
-      </div>
-      <div class="arch-note anim" style="--d:.36s"><span>Il modello non scrive mai nel database: produce JSON.</span><b>Regole e persona trasformano il JSON in un dato affidabile.</b></div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>06</b> / 11</span></div>
+      <div class="bottom-note anim" style="--d:.34s">La sicurezza alimentare <b>non è un output del modello</b>: è un'invariante del sistema.</div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
-    <!-- 07 · LOCAL -->
-    <section class="slide" data-title="Locale per scelta">
-      <div class="eyebrow anim"><span class="tick"></span> 06 — Privacy by architecture</div>
-      <h2 class="anim" style="--d:.05s">Le foto del tuo frigo<br><span class="mark">restano a casa.</span></h2>
+    <!-- 07 · LA SCADENZA -->
+    <section class="slide" data-title="La scadenza">
+      <div class="eyebrow anim"><span class="tick"></span> 06 — Da dove viene la scadenza</div>
+      <h2 class="anim" style="--d:.05s">Una data, <span class="mark">tre livelli di affidabilità.</span></h2>
+      <div class="src-grid">
+        <div class="src-card anim" style="--d:.1s">
+          <span class="tag-src"><i></i>label</span>
+          <h3>Letta dall'etichetta</h3>
+          <p>La data vera stampata sulla confezione, quando la fotografi.</p>
+          <div class="ex">EXP 12/10/26 → 12/10/2026</div>
+        </div>
+        <div class="src-card anim" style="--d:.16s">
+          <span class="tag-src"><i></i>manual</span>
+          <h3>Corretta da te</h3>
+          <p>Quando sai qualcosa in più del modello, l'ultima parola è la tua.</p>
+          <div class="ex">12.10.2026 → 12/10/2026</div>
+        </div>
+        <div class="src-card anim" style="--d:.22s">
+          <span class="tag-src"><i></i>estimated</span>
+          <h3>Stimata dalla tabella</h3>
+          <p>Acquisto + durata tipica per categoria e stato. In UI è marcata come <b>“circa”</b>.</p>
+          <div class="ex">acquisto + 3 giorni</div>
+        </div>
+      </div>
+      <div class="ex-strip">
+        <div class="example anim" style="--d:.28s"><div class="ex-k">Europeo</div><code>12/10/26</code><div class="ex-r">letto come gg/mm/aa</div></div>
+        <div class="example anim" style="--d:.32s"><div class="ex-k">Puntato</div><code>12.10.2026</code><div class="ex-r">mese e anno → fine mese</div></div>
+        <div class="example anim" style="--d:.36s"><div class="ex-k">Letterale</div><code>12 OTT 2026</code><div class="ex-r">mesi in italiano e inglese</div></div>
+        <div class="example anim" style="--d:.4s"><div class="ex-k">Ignorato</div><code>L:2610A</code><div class="ex-r">il lotto non è una data</div></div>
+      </div>
+      <div class="bottom-note anim" style="--d:.44s">E distinguiamo <b>"da consumare entro"</b> (sicurezza) da <b>"preferibilmente entro"</b> (qualità).</div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
+    </section>
+
+    <!-- 08 · BARCODE -->
+    <section class="slide light" data-title="Codice a barre">
+      <div class="eyebrow anim"><span class="tick"></span> 07 — Codice a barre</div>
+      <h2 class="anim" style="--d:.05s">La foto conferma. <span class="mark">Il catalogo completa.</span></h2>
+      <div class="bc-grid">
+        <div>
+          <p class="sub anim" style="--d:.1s; margin-top:8px">OpenCV decodifica l'EAN dalla foto. Il codice viene validato col checksum, poi arricchito da <strong>Open Food Facts</strong>: nome, marca, confezione e categoria.</p>
+          <div class="bc-note anim" style="--d:.28s"><b>È l'unica chiamata di rete</b> di fuorisaver, ed è opzionale: se il prodotto non c'è o sei offline, i dettagli vengono stimati dalla foto.</div>
+        </div>
+        <div class="bc-flow">
+          <div class="bc-step anim" style="--d:.14s"><div class="bci">📷</div><div><h4>1 · La foto</h4><p>Provi più risoluzioni e un blur leggero per far leggere il codice al detector.</p></div></div>
+          <div class="bc-step anim" style="--d:.2s"><div class="bci">#️⃣</div><div><h4>2 · L'EAN</h4><p>8, 12 o 13 cifre, con checksum verificato: niente letture fantasma.</p></div></div>
+          <div class="bc-step anim" style="--d:.26s"><div class="bci">🌍</div><div><h4>3 · Open Food Facts</h4><p>Prodotto trovato → nome, marca e categoria reali. Non trovato → si resta sulla stima.</p></div></div>
+        </div>
+      </div>
+      <div class="barcode-strip anim" style="--d:.34s">
+        <div class="bars"></div>
+        <div class="bc-caption"><b>8 · 12 · 13 cifre — checksum verificato</b>Un codice valido non è una lettura fantasma: se il risultato non torna, si scarta.</div>
+      </div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
+    </section>
+
+    <!-- 09 · LOCALE -->
+    <section class="slide" data-title="Locale">
+      <div class="eyebrow anim"><span class="tick"></span> 08 — Locale per scelta</div>
+      <h2 class="anim" style="--d:.05s">Le foto del tuo frigo <span class="mark">restano a casa.</span></h2>
       <div class="local-grid">
         <div>
-          <p class="sub anim" style="--d:.1s">Nessuna foto, nessuno scontrino, nessun dato alimentare inviato a un servizio esterno. Il modello gira sul tuo dispositivo.</p>
+          <p class="sub anim" style="--d:.1s; margin-top:6px">Le foto del frigo sono dati personali. Non hanno bisogno di un cloud: girano sul dispositivo, con Ollama.</p>
           <div class="local-list">
-            <div class="local-item anim" style="--d:.15s">
-              <div class="li">◎</div>
-              <div><h3>Privacy reale, non una policy</h3><p>Il perimetro è la tua macchina. Non c'è un cloud da autorizzare.</p></div>
-            </div>
-            <div class="local-item anim" style="--d:.2s">
-              <div class="li">€</div>
-              <div><h3>Zero costi per token</h3><p>Nessun abbonamento, nessuna API a consumo. Il modello si scarica una volta.</p></div>
-            </div>
-            <div class="local-item anim" style="--d:.25s">
-              <div class="li">⌁</div>
-              <div><h3>Funziona in LAN</h3><p>Apri l'app dal telefono mentre sei in cucina. Anche senza internet.</p></div>
-            </div>
-            <div class="local-item anim" style="--d:.3s">
-              <div class="li">IT</div>
-              <div><h3>Italiano e multimodalità</h3><p>Gemma legge italiano, scontrini e etichette. Il resto lo fanno le regole.</p></div>
-            </div>
+            <div class="local-item anim" style="--d:.16s"><div class="li">🔒</div><div><h3>Tutto sul dispositivo</h3><p>Foto, stime e inventario restano in locale. Nessun upload, nessun account.</p></div></div>
+            <div class="local-item anim" style="--d:.22s"><div class="li">💸</div><div><h3>Zero costi per token</h3><p>Il modello gira sul tuo ferro, non a consumo. Nessuna bolletta API.</p></div></div>
+            <div class="local-item anim" style="--d:.28s"><div class="li">📶</div><div><h3>Funziona in LAN</h3><p>Lo apri dal telefono in cucina, mentre il portatile è in un'altra stanza.</p></div></div>
           </div>
         </div>
-        <div class="local-visual anim" style="--d:.18s">
-          <div class="local-ring">
-            <div class="local-core">
-              <div class="lock">⌂</div>
-              <b>100%</b>
-              <span>locale</span>
-            </div>
+        <div class="local-visual anim" style="--d:.2s">
+          <div class="ring"></div>
+          <div class="local-core">
+            <img src="../assets/fuorisaver-morso-mark.svg" alt="">
+            <b>local-first</b>
+            <span>foto · stime · dati</span>
           </div>
-          <div class="orbit-label orbit-one">foto · scontrini · etichette</div>
-          <div class="orbit-label orbit-two">Ollama on device</div>
-          <div class="orbit-label orbit-three">no cloud</div>
+          <div class="orbit-label orbit-one">Ollama · Gemma 4</div>
+          <div class="orbit-label orbit-two">SQLite</div>
+          <div class="orbit-label orbit-three">Open Food Facts · opzionale</div>
         </div>
       </div>
-      <p class="local-foot anim" style="--d:.34s">Compromesso onesto: serve hardware locale. L'app è containerizzata; Ollama può girare sull'host e parlare con il container.</p>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>07</b> / 11</span></div>
+      <div class="bottom-note anim" style="--d:.34s">Nessun account. Nessun abbonamento. <b>Il modello è tuo.</b></div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
-    <!-- 08 · PRINCIPLES -->
-    <section class="slide light" data-title="Principi di engineering">
-      <div class="eyebrow anim"><span class="tick"></span> 07 — Scelte di engineering</div>
-      <h2 class="anim" style="--d:.05s">L'AI è potente.<br><span class="mark">Non è un oracolo.</span></h2>
-      <div class="principles">
-        <div class="principle anim" style="--d:.1s">
-          <div class="pn">01</div>
-          <div><h3>Deterministico dove serve</h3><p>Date, shelf-life e regole di sicurezza vengono da codice e dati versionati, non dalla fantasia del modello.</p></div>
-        </div>
-        <div class="principle anim" style="--d:.15s">
-          <div class="pn">02</div>
-          <div><h3>Umano nel loop</h3><p>Ogni inserimento passa da una conferma. La confidenza del modello è visibile prima di salvare.</p></div>
-        </div>
-        <div class="principle anim" style="--d:.2s">
-          <div class="pn">03</div>
-          <div><h3>Incertezza esplicita</h3><p>Tre fonti di scadenza: estimated, label, manual. In UI le stime sono marcate “circa”.</p></div>
-        </div>
-        <div class="principle anim" style="--d:.25s">
-          <div class="pn">04</div>
-          <div><h3>Testabile</h3><p>Test unitari su parser date, shelf-life e database. La parte critica non dipende dal modello.</p></div>
-        </div>
+    <!-- 10 · ENGINEERING -->
+    <section class="slide light" data-title="Engineering">
+      <div class="eyebrow anim"><span class="tick"></span> 09 — Engineering</div>
+      <h2 class="anim" style="--d:.05s">Piccole scelte che lo rendono <span class="mark">credibile.</span></h2>
+      <div class="eng-grid">
+        <div class="principle anim" style="--d:.1s"><div class="pn">01</div><div><h3>Deterministico dove serve</h3><p>Le date le calcola il codice, non il modello. Stessa foto, stessa risposta.</p></div></div>
+        <div class="principle anim" style="--d:.16s"><div class="pn">02</div><div><h3>Umano nel loop</h3><p>Nessun salvataggio automatico: si conferma sempre prima di scrivere in inventario.</p></div></div>
+        <div class="principle anim" style="--d:.22s"><div class="pn">03</div><div><h3>Incertezza esplicita</h3><p>Una stima è dichiarata "circa". Chiamiamo stima una stima, non una data certa.</p></div></div>
+        <div class="principle anim" style="--d:.28s"><div class="pn">04</div><div><h3>Testabile</h3><p>Test unitari su date, shelf-life, barcode e database. Il comportamento è bloccato da pytest.</p></div></div>
       </div>
-      <div class="disclaimer anim" style="--d:.3s"><b>Disclaimer in app:</b> Frigo stima, non garantisce la sicurezza alimentare. Controlla sempre aspetto e odore.</div>
-      <div class="examples anim" style="--d:.34s">
-        <div class="example">
-          <div class="ex-k">Parser date</div>
-          <code>EXP 12/10/26</code>
-          <div class="ex-r">→ 12 ottobre 2026</div>
-        </div>
-        <div class="example">
-          <div class="ex-k">Mese + anno</div>
-          <code>TMC 03/2027</code>
-          <div class="ex-r">→ 31 marzo 2027</div>
-        </div>
-        <div class="example">
-          <div class="ex-k">Regola shelf-life</div>
-          <code>carne · chiuso</code>
-          <div class="ex-r">→ acquisto + 3 giorni</div>
-        </div>
+      <div class="verify">
+        <div class="v anim" style="--d:.34s"><span>Test</span><b>4 moduli · pytest</b></div>
+        <div class="v anim" style="--d:.38s"><span>Benchmark</span><b>foto reali di etichette</b></div>
+        <div class="v anim" style="--d:.42s"><span>Deploy</span><b>uv + Docker Compose</b></div>
       </div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>08</b> / 11</span></div>
+      <div class="bottom-note anim" style="--d:.46s">L'OCR di fallback si aggiunge <b>solo se il benchmark lo richiede</b>, non per fede.</div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
-    <!-- 09 · STATUS -->
+    <!-- 11 · STATO E ROADMAP -->
     <section class="slide" data-title="Stato e roadmap">
-      <div class="eyebrow anim"><span class="tick"></span> 08 — Dove siamo</div>
-      <h2 class="anim" style="--d:.05s">Demo-ready.<br><span class="mark">Non finito.</span></h2>
+      <div class="eyebrow anim"><span class="tick"></span> 10 — Stato</div>
+      <h2 class="anim" style="--d:.05s">Demo-ready. <span class="mark">Non finito.</span></h2>
       <div class="status-grid">
-        <div class="status-col anim" style="--d:.1s">
-          <h3>Cosa c'è già</h3>
+        <div class="status-col">
+          <h3>Già in piedi</h3>
           <div class="check-list">
-            <div class="check"><span class="yes">✓</span> Inventario ordinato per scadenza, con semaforo e costo dello spreco</div>
-            <div class="check"><span class="yes">✓</span> Inserimento da scontrino, foto prodotto, etichetta o manuale</div>
-            <div class="check"><span class="yes">✓</span> Ricette generate dagli ingredienti in scadenza</div>
-            <div class="check"><span class="yes">✓</span> Notifiche opzionali via ntfy per gli item urgenti</div>
-            <div class="check"><span class="yes">✓</span> SQLite, Docker Compose e Ollama locale</div>
-            <div class="check"><span class="yes">✓</span> Test suite per date, shelf-life e database</div>
+            <div class="check anim" style="--d:.1s"><span class="yes">✓</span> Inventario a semaforo, con costo dello spreco in euro</div>
+            <div class="check anim" style="--d:.14s"><span class="yes">✓</span> Quattro vie d'ingresso: prodotto, etichetta, codice a barre, scontrino (beta)</div>
+            <div class="check anim" style="--d:.18s"><span class="yes">✓</span> Codice a barre + Open Food Facts</div>
+            <div class="check anim" style="--d:.22s"><span class="yes">✓</span> Ricette sugli ingredienti in scadenza e notifiche ntfy opzionali</div>
+            <div class="check anim" style="--d:.26s"><span class="yes">✓</span> SQLite, Docker Compose e Ollama locale</div>
+            <div class="check anim" style="--d:.3s"><span class="yes">✓</span> Test suite per date, shelf-life, barcode e database</div>
           </div>
-          <div class="status-tag"><i></i> prototipo funzionante · prima draft</div>
+          <div class="status-tag anim" style="--d:.36s"><i></i> Il prototipo gira</div>
         </div>
-        <div class="status-col anim" style="--d:.17s">
-          <h3>Cosa viene dopo</h3>
-          <div class="phase">
-            <div class="when">Next</div>
-            <div><h4>Validare la visione</h4><p>Benchmark su 20 foto reali di etichette. OCR di fallback solo se l'accuratezza non basta.</p></div>
+        <div class="status-col">
+          <h3>Prossimo</h3>
+          <div class="check-list">
+            <div class="check anim" style="--d:.12s"><span class="no">→</span> Statistiche sullo spreco nel tempo</div>
+            <div class="check anim" style="--d:.16s"><span class="no">→</span> Lista della spesa e meal planner</div>
+            <div class="check anim" style="--d:.2s"><span class="no">→</span> Benchmark completo sulle etichette e OCR di fallback</div>
+            <div class="check anim" style="--d:.24s"><span class="no">→</span> Rifinitura dell'esperienza mobile</div>
+            <div class="check anim" style="--d:.28s"><span class="no">→</span> Scontrino fuori dalla beta</div>
           </div>
-          <div class="phase">
-            <div class="when">Next</div>
-            <div><h4>Meno attrito</h4><p>Barcode e Open Food Facts, notifiche più intelligenti, UX mobile rifinita.</p></div>
-          </div>
-          <div class="phase">
-            <div class="when">Later</div>
-            <div><h4>Chiudere il cerchio</h4><p>Lista della spesa, meal planner e statistiche di impatto nel tempo.</p></div>
-          </div>
-          <div class="phase">
-            <div class="when">Open</div>
-            <div><h4>Hacktoberfest</h4><p>Issue piccole, impatto grande: parser, categorie, test, UI.</p></div>
-          </div>
+          <div class="bottom-note anim" style="--d:.34s">Il resto è <b>roadmap, non fumo.</b></div>
         </div>
       </div>
-      <div class="demo-script anim" style="--d:.28s">
-        <span class="ds-label">Se provi la demo</span>
-        <span><b>1</b> scontrino</span><i>→</i>
-        <span><b>2</b> correggi</span><i>→</i>
-        <span><b>3</b> aggiungi</span><i>→</i>
-        <span><b>4</b> apri ricette</span>
-      </div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>09</b> / 11</span></div>
+      <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
     </section>
 
-    <!-- 10 · IMPACT -->
-    <section class="slide light" data-title="Impatto">
-      <div class="eyebrow anim"><span class="tick"></span> 09 — Impatto</div>
-      <div class="impact-head">
-        <h2 class="anim" style="--d:.05s">Il successo non è l'AI che indovina.<br>È <span class="serif">la cena che non buttiamo.</span></h2>
-      </div>
-      <div class="metrics">
-        <div class="metric anim" style="--d:.1s"><div class="mv">€</div><div class="ml">Spreco in euro, già tracciato in app</div></div>
-        <div class="metric anim" style="--d:.14s"><div class="mv">3</div><div class="ml">Canali di input: scontrino, prodotto, etichetta</div></div>
-        <div class="metric anim" style="--d:.18s"><div class="mv">0</div><div class="ml">Foto inviate al cloud</div></div>
-        <div class="metric anim" style="--d:.22s"><div class="mv">1</div><div class="ml">Tap per segnare consumato o buttato</div></div>
-      </div>
-      <div class="measure anim" style="--d:.28s">
-        <div>
-          <h4>Come misuriamo</h4>
-          <p><b>Euro sprecati</b>, item consumati vs buttati, ricette usate. Baseline prima/dopo 4 settimane.</p>
-        </div>
-        <div>
-          <h4>La metrica che conta</h4>
-          <p>Non l'accuratezza media del modello. <b>Quanti pasti in più</b> nascono da ciò che era già in frigo.</p>
+    <!-- 12 · CHIUSURA -->
+    <section class="slide accent" data-title="Chiusura">
+      <div class="closing-inner">
+        <div class="closing-copy">
+          <div class="brand-lockup anim">
+            <img class="brand-tile" src="../assets/fuorisaver-morso-mark.svg" alt="" style="height:34px">
+            <span class="wordmark" style="font-size:26px">fuorisaver</span>
+          </div>
+          <h2 class="anim" style="--d:.06s">Meno spreco.<br><span class="serif">Più cene.</span></h2>
+          <p class="sub anim" style="--d:.12s">La metrica non è l'accuratezza del modello: è <strong>quanti pasti in più</strong> nascono da ciò che avevamo già. Provatelo con il prossimo scontrino.</p>
+          <a class="gh anim" style="--d:.18s" href="https://github.com/AlessioChen/hacktoberfest-milan" target="_blank" rel="noopener">
+            <span class="gh-arrow">↗</span> github.com/AlessioChen/hacktoberfest-milan
+          </a>
         </div>
       </div>
-      <div class="experiment anim" style="--d:.34s">
-        <div class="ex-label">Prossimo esperimento</div>
-        <div class="ex-step"><b>01</b> 4 settimane di utilizzo reale</div>
-        <div class="ex-step"><b>02</b> baseline: euro sprecati</div>
-        <div class="ex-step"><b>03</b> confronto, non impressioni</div>
+      <div class="closing-mark anim" style="--d:.1s">
+        <img src="../assets/fuorisaver-morso-mark.svg" alt="">
+        <b style="font-size:13px;letter-spacing:-.02em;color:#2B1608">il salvatore del fuorisede</b>
       </div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>10</b> / 11</span></div>
-    </section>
-
-    <!-- 11 · CLOSING -->
-    <section class="slide accent closing" data-title="Chiusura">
-      <div class="eyebrow anim"><span class="tick"></span> Hacktoberfest Milan · 2026</div>
-      <h2 class="anim" style="--d:.06s">Meno spreco.<br><span class="serif">Più cene.</span></h2>
-      <p class="close-sub anim" style="--d:.12s">Provalo con il tuo prossimo scontrino. Se ti va, <b>contribuisci</b>: c'è un frigo intero da salvare.</p>
-      <a class="repo anim" style="--d:.18s" href="https://github.com/AlessioChen/hacktoberfest-milan">
-        <span class="gh">↗</span> github.com/AlessioChen/hacktoberfest-milan
-      </a>
-      <div class="closing-mark"><img class="brand-mark" src="../assets/fuorisaver-morso-mark.svg" alt=""><span>Frigo</span></div>
-      <div class="closing-foot"><b>Grazie.</b>Domande? Demo?</div>
-      <div class="footer"><span class="brand"><img class="brand-mark brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> Frigo</span><span class="page"><b>11</b> / 11</span></div>
+      <div class="closing-foot anim" style="--d:.2s"><b>Grazie.</b>Domande? Demo?</div>
     </section>
 
   </main>
@@ -1706,24 +827,25 @@
 <div class="ui hint">← → per navigare · N per le note · F per fullscreen</div>
 <div class="ui nav">
   <button id="prev" aria-label="Slide precedente">←</button>
-  <span class="count" id="count">01 / 11</span>
+  <span class="count" id="count">01 / 12</span>
   <button id="next" aria-label="Slide successiva">→</button>
 </div>
 <div class="ui notes-panel" id="notesPanel"><span class="nt">Note del relatore</span><div id="notesBody"></div></div>
 
 <!-- Speaker notes: one per slide -->
 <div class="notes" data-notes>
-  <p><b>0:00 — Apertura.</b> “Quante volte aprite il frigo e trovate qualcosa che non ricordavate di aver comprato? Frigo nasce da lì: un colpo di telefono al frigo, prima che sia troppo tardi.”</p>
-  <p><b>0:25 — Problema.</b> “Un terzo del cibo prodotto non arriva nel piatto. La maggior parte dello spreco domestico non nasce dalla cattiveria: nasce dalla mancanza di un dato. Non sappiamo cosa scade, quando.”</p>
-  <p><b>0:55 — Intuizione.</b> “Lo scontrino ci dà già nomi, quantità, prezzi e data d'acquisto. Non ci dà le scadenze. Quindi non chiediamo all'utente di compilare un database: usiamo ciò che esiste già, stimiamo con regole esplicite e correggiamo con una foto dell'etichetta.”</p>
-  <p><b>1:30 — Soluzione.</b> “Tre input, zero data entry: scontrino, prodotto, etichetta. Il risultato è un inventario con semaforo, stime dichiarate e una ricetta per ciò che sta per scadere.”</p>
-  <p><b>2:15 — Demo.</b> “Qui vedete l'inventario. Rosso significa entro due giorni, giallo entro cinque, verde oltre. ‘Circa’ segnala una stima. Un tap per consumato, uno per buttato, e lo spreco diventa una cifra in euro.”</p>
-  <p><b>2:50 — Come funziona.</b> “L'architettura separa responsabilità: Gemma estrae e classifica; Python normalizza date e applica la tabella shelf-life; la persona conferma. Il modello non decide la sicurezza alimentare.”</p>
-  <p><b>3:30 — Locale.</b> “Tutto resta sul dispositivo. Le foto del frigo sono dati personali: non hanno bisogno di un cloud. In più zero costi per token e funziona in LAN, dal telefono in cucina.”</p>
-  <p><b>4:05 — Engineering.</b> “Le scelte che rendono il progetto credibile: deterministico dove serve, umano nel loop, incertezza esplicita, testabile. L'app stima, non garantisce: il disclaimer è parte del prodotto.”</p>
-  <p><b>4:35 — Stato.</b> “Non è un mockup: il prototipo gira. Mancano benchmark sulle etichette, OCR di fallback e rifinitura mobile. Il resto è roadmap, non fumo.”</p>
-  <p><b>5:10 — Impatto.</b> “La metrica non è l'accuratezza del modello. È quanti pasti in più nascono da ciò che avevamo già. Misuriamo euro sprecati, item consumati e ricette usate.”</p>
-  <p><b>5:40 — Chiusura.</b> “Meno spreco, più cene. Provatelo con il prossimo scontrino e, se vi va, contribuite: il repo è aperto.”</p>
+  <p><b>0:00 — Apertura.</b> "Quante volte aprite il frigo e trovate qualcosa che non ricordavate di aver comprato? fuorisaver nasce da lì: il salvatore del fuorisede, che ti avvisa prima che sia troppo tardi."</p>
+  <p><b>0:25 — Problema.</b> "Un terzo del cibo prodotto non arriva mai nel piatto, e la fetta più grossa dello spreco è domestica. Non è pigrizia: è che nessuno tiene il conto di quando scade cosa. Le app di inventario chiedono di compilare tutto a mano, e infatti non le usa nessuno."</p>
+  <p><b>0:55 — Intuizione.</b> "Il dato esiste già: lo scontrino dice cosa hai comprato, l'etichetta dice quando scade, la foto dice cos'è. Non serve un'app che ti chieda di inserire dati. Ne serve una che li veda. Zero data entry."</p>
+  <p><b>1:30 — Soluzione.</b> "Quattro vie d'ingresso: foto prodotto, foto etichetta, codice a barre e, in beta, lo scontrino. In tutti i casi il modello propone e la persona conferma, con la confidenza in vista."</p>
+  <p><b>2:15 — Demo.</b> "Qui l'inventario vero. Rosso entro due giorni, giallo entro cinque, verde oltre. Un tap per consumato, uno per buttato, e lo spreco diventa una cifra in euro. C'è il suggerimento ricette e le notifiche opzionali. Non è un mockup: gira."</p>
+  <p><b>2:55 — Architettura.</b> "Tre responsabilità separate. Gemma estrae e classifica. Python normalizza le date e applica la tabella shelf-life ispirata a FoodKeeper. La persona conferma. Così la sicurezza alimentare non è mai un output del modello."</p>
+  <p><b>3:30 — La scadenza.</b> "La scadenza ha tre livelli, sempre visibili: letta dall'etichetta, corretta a mano, o stimata dalla tabella e marcata 'circa'. Il parser legge molti formati, in italiano e in inglese, e non si fa ingannare dal numero di lotto."</p>
+  <p><b>4:00 — Barcode.</b> "Il codice a barre è il tocco in più: OpenCV lo decodifica, il checksum lo valida, Open Food Facts completa nome e marca. Ed è l'unica chiamata di rete del progetto, opzionale."</p>
+  <p><b>4:25 — Locale.</b> "Le foto del frigo sono dati personali. Restano sul dispositivo: niente cloud, zero costi per token, e lo apri dal telefono in cucina. Local-first non è una moda, qui è la scelta giusta."</p>
+  <p><b>4:55 — Engineering.</b> "Le scelte che rendono il progetto credibile: deterministico dove serve, umano nel loop, incertezza dichiarata, testabile. E la decisione sull'OCR di fallback la prende un benchmark, non la fede."</p>
+  <p><b>5:25 — Stato.</b> "Non è un mockup: il prototipo gira, con test e container. Lo scontrino è in beta, mancano statistiche, lista della spesa e rifinitura mobile. Il resto è roadmap, non fumo."</p>
+  <p><b>5:55 — Chiusura.</b> "La metrica non è l'accuratezza del modello. È quante cene in più nascono da ciò che avevamo già. Meno spreco, più cene: provatelo con il prossimo scontrino, e il repo è aperto."</p>
 </div>
 
 <script>
