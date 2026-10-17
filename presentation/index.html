@@ -316,6 +316,8 @@
   .bc-note b { color: var(--fg); }
   .barcode-strip { display: flex; align-items: center; gap: 22px; margin-top: 24px; padding: 16px 22px; border: 1px solid var(--line); border-radius: 14px; background: rgba(43,22,8,.05); }
   .barcode-strip .bars { width: 320px; height: 52px; flex: 0 0 auto; background: repeating-linear-gradient(90deg, var(--brown) 0 2px, transparent 2px 5px, var(--brown) 5px 8px, transparent 8px 12px, var(--brown) 12px 16px, transparent 16px 19px); }
+  .barcode-svg { width: 320px; height: 52px; flex: 0 0 auto; display: block; }
+  .barcode-svg rect { fill: var(--brown); }
   .barcode-strip .bc-caption { font-size: 11px; line-height: 1.5; color: var(--muted); }
   .barcode-strip .bc-caption b { display: block; font-size: 12px; color: var(--fg); letter-spacing: -.01em; }
 
@@ -712,7 +714,7 @@
         </div>
       </div>
       <div class="barcode-strip anim" style="--d:.34s">
-        <div class="bars"></div>
+        <svg class="barcode-svg" viewBox="0 0 285 64" preserveAspectRatio="none" role="img" aria-label="Codice a barre EAN-13 8001234567897"><rect x="0" y="0" width="3" height="64"/><rect x="6" y="0" width="3" height="64"/><rect x="18" y="0" width="6" height="64"/><rect x="27" y="0" width="3" height="64"/><rect x="33" y="0" width="3" height="64"/><rect x="42" y="0" width="9" height="64"/><rect x="57" y="0" width="6" height="64"/><rect x="69" y="0" width="3" height="64"/><rect x="78" y="0" width="6" height="64"/><rect x="87" y="0" width="6" height="64"/><rect x="96" y="0" width="3" height="64"/><rect x="111" y="0" width="3" height="64"/><rect x="117" y="0" width="3" height="64"/><rect x="129" y="0" width="6" height="64"/><rect x="138" y="0" width="3" height="64"/><rect x="144" y="0" width="3" height="64"/><rect x="150" y="0" width="3" height="64"/><rect x="159" y="0" width="9" height="64"/><rect x="171" y="0" width="3" height="64"/><rect x="177" y="0" width="3" height="64"/><rect x="192" y="0" width="3" height="64"/><rect x="204" y="0" width="3" height="64"/><rect x="213" y="0" width="3" height="64"/><rect x="222" y="0" width="3" height="64"/><rect x="234" y="0" width="9" height="64"/><rect x="246" y="0" width="3" height="64"/><rect x="255" y="0" width="3" height="64"/><rect x="267" y="0" width="3" height="64"/><rect x="276" y="0" width="3" height="64"/><rect x="282" y="0" width="3" height="64"/></svg>
         <div class="bc-caption"><b>8 · 12 · 13 cifre — checksum verificato</b>Un codice valido non è una lettura fantasma: se il risultato non torna, si scarta.</div>
       </div>
       <div class="footer"><span class="brand"><img class="brand-tile" src="../assets/fuorisaver-morso-tile.svg" alt=""> fuorisaver</span></div>
