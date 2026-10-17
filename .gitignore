@@ -1,0 +1,6 @@
+tests/fixtures/off/
+tests/fixtures/synthetic/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/

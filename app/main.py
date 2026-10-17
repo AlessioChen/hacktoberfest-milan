@@ -46,13 +46,17 @@ def item_form(proposal: dict, key: str) -> Item | None:
         qty = c1.number_input("Quantità", 0.0, value=1.0)
         prezzo = c2.number_input("Prezzo (€)", 0.0, value=0.0)
         bought = st.date_input("Acquistato il", date.today())
-        manual = st.date_input("Scadenza (opzionale, sovrascrive la stima)", value=None)
+        letta = dates.parse(proposal.get("testo_data") or "")
+        if letta:
+            st.caption(f"Data letta dalla confezione: `{proposal['testo_data']}`")
+        manual = st.date_input("Scadenza (se vuota, viene stimata)", value=letta)
         if st.form_submit_button("Salva") and nome:
+            fonte = "estimated" if not manual else "label" if manual == letta else "manual"
             return Item(
                 nome=nome, categoria=categoria, stato=stato, qty=qty, prezzo=prezzo or None,
                 acquistato_il=bought, confidenza=proposal.get("confidenza"),
                 scade_il=manual or shelf_life.estimate(categoria, stato, bought),
-                fonte_scadenza="manual" if manual else "estimated")
+                fonte_scadenza=fonte)
     return None
 
 

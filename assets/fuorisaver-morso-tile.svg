@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -5 260 250" width="512" height="492">
+  <rect x="-10" y="-5" width="260" height="250" fill="#FF7A2F"/><defs>
+    <mask id="bite">
+      <rect x="0" y="0" width="240" height="240" fill="#fff"/>
+      <circle cx="180" cy="62" r="26" fill="#000"/>
+      <circle cx="168" cy="42" r="20" fill="#000"/>
+      <circle cx="192" cy="88" r="18" fill="#000"/>
+    </mask>
+  </defs>
+  <path d="M120 46 Q119 26 130 12" fill="none" stroke="#2B1608" stroke-width="7" stroke-linecap="round"/>
+  <path d="M132 18 C150 0 176 6 178 10 C172 28 148 30 132 18Z" fill="#1F7A4A"/>
+  <rect x="66" y="44" width="108" height="170" rx="22" fill="#FFF3DF" mask="url(#bite)"/>
+  <rect x="66" y="108" width="108" height="6" fill="#FF7A2F"/>
+  <rect x="86" y="70" width="7" height="26" rx="3.5" fill="#FF7A2F"/>
+  <rect x="86" y="126" width="7" height="40" rx="3.5" fill="#FF7A2F"/>
+  <rect x="84" y="214" width="14" height="9" rx="2" fill="#2B1608"/>
+  <rect x="142" y="214" width="14" height="9" rx="2" fill="#2B1608"/>
+</svg>

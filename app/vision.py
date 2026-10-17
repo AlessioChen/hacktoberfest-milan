@@ -56,16 +56,19 @@ def product_schema() -> dict:
             "nome": {"type": "string"},
             "categoria": {"type": "string", "enum": _categories()},
             "stato": {"type": "string", "enum": ["chiuso", "aperto", "cotto", "congelato"]},
+            "testo_data": {"type": "string"},
             "confidenza": {"type": "number"},
         },
-        "required": ["nome", "categoria", "stato", "confidenza"],
+        "required": ["nome", "categoria", "stato", "testo_data", "confidenza"],
     }
 
 
 def identify_product(image: bytes) -> dict:
     return chat_json(
         "Identifica il prodotto alimentare nella foto. Rispondi in JSON: nome (italiano), "
-        "categoria, stato (chiuso/aperto/cotto/congelato) e confidenza tra 0 e 1.",
+        "categoria, stato (chiuso/aperto/cotto/congelato), confidenza tra 0 e 1 e testo_data: "
+        "se sulla confezione è visibile una data di scadenza copiala ESATTAMENTE com'è stampata, "
+        "altrimenti stringa vuota. Non inventare date.",
         product_schema(), image)
 
 
